@@ -474,6 +474,158 @@
     color: var(--text2); font-size: 13px;
   }
 
+  /* ── Watchlist Add Panel ── */
+  #watchlist-panel {
+    display: none;
+    padding: 14px 24px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  #watchlist-panel.visible { display: flex; }
+  #watch-search-wrap {
+    position: relative;
+    flex: 1; min-width: 220px; max-width: 360px;
+  }
+  #watch-search-wrap input {
+    width: 100%;
+    padding: 8px 10px 8px 36px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text); font-size: 13px;
+    outline: none; transition: border-color .15s;
+  }
+  #watch-search-wrap input:focus { border-color: var(--accent); }
+  #watch-search-wrap svg {
+    position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%); color: var(--text2); pointer-events: none;
+  }
+  #watch-lookup-result {
+    font-size: 13px; color: var(--text2);
+    display: flex; align-items: center; gap: 10px;
+  }
+  #watch-lookup-result .wl-name { color: var(--text); font-weight: 600; }
+  #watch-lookup-result .wl-sector { font-size: 11px; }
+  #watch-msg { font-size: 12px; }
+  #watch-msg.ok  { color: var(--green); }
+  #watch-msg.err { color: var(--red); }
+
+  /* ── ETF Stocks Add Panel ── */
+  #etfstocks-panel {
+    display: none;
+    padding: 14px 24px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  #etfstocks-panel.visible { display: flex; }
+  #etfs-search-wrap {
+    position: relative;
+    flex: 1; min-width: 220px; max-width: 420px;
+  }
+  #etfs-search-wrap input {
+    width: 100%;
+    padding: 8px 10px 8px 36px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text); font-size: 13px;
+    outline: none; transition: border-color .15s;
+  }
+  #etfs-search-wrap input:focus { border-color: var(--accent); }
+  #etfs-search-wrap svg {
+    position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%); color: var(--text2); pointer-events: none;
+  }
+  #etfs-lookup-result {
+    font-size: 13px; color: var(--text2);
+    display: flex; align-items: center; gap: 10px;
+  }
+  #etfs-lookup-result .wl-name { color: var(--text); font-weight: 600; }
+  #etfs-lookup-result .wl-sector { font-size: 11px; }
+  #etfs-msg { font-size: 12px; }
+  #etfs-msg.ok  { color: var(--green); }
+  #etfs-msg.err { color: var(--red); }
+
+  /* ── High-Yield Suggest Popover ── */
+  #hy-suggest-btn {
+    white-space: nowrap;
+  }
+  #hy-popover {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 520px; max-width: 96vw;
+    max-height: 70vh;
+    overflow-y: auto;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.7);
+    z-index: 300;
+    display: none;
+  }
+  #hy-popover.visible { display: block; }
+  #hy-popover h3 {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    margin-bottom: 14px; display: flex; justify-content: space-between;
+    align-items: center;
+  }
+  #hy-popover h3 button {
+    background: none; border: none; color: var(--text2);
+    font-size: 18px; cursor: pointer; padding: 0 4px;
+  }
+  .hy-group { margin-bottom: 14px; }
+  .hy-group-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--text2);
+    margin-bottom: 6px;
+  }
+  .hy-items { display: flex; flex-wrap: wrap; gap: 6px; }
+  .hy-item {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; padding: 5px 10px;
+    font-size: 12px;
+  }
+  .hy-item .hy-ticker { font-weight: 700; color: var(--accent); }
+  .hy-item .hy-name   { color: var(--text2); font-size: 11px; max-width: 130px;
+                        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hy-item .hy-yield  { color: var(--green); font-size: 11px; font-weight: 600; }
+  .hy-add-btn {
+    background: none; border: 1px solid var(--green);
+    border-radius: 4px; padding: 1px 7px;
+    font-size: 12px; color: var(--green);
+    cursor: pointer; transition: all .15s; flex-shrink: 0;
+  }
+  .hy-add-btn:hover { background: var(--green-bg); }
+  .hy-add-btn.added { color: var(--text2); border-color: var(--border); cursor: default; }
+  .hy-add-btn:disabled { opacity: .5; cursor: wait; }
+  .remove-btn {
+    background: none; border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px 8px;
+    font-size: 11px; color: var(--text2);
+    cursor: pointer; transition: all .15s;
+  }
+  .remove-btn:hover { color: var(--red); border-color: var(--red); background: var(--red-bg); }
+
+  /* ── Quick-Add to Watchlist button (inline in ticker cell) ── */
+  .quick-add-btn {
+    background: none; border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 6px;
+    font-size: 13px; font-weight: 600; line-height: 1.4;
+    color: var(--text2); cursor: pointer; transition: all .15s;
+    margin-left: 5px; vertical-align: middle;
+  }
+  .quick-add-btn:hover { color: var(--green); border-color: var(--green); background: var(--green-bg); }
+  .quick-add-btn.added { color: var(--green); border-color: var(--green); }
+
   /* ── Penny Controls ── */
   #penny-controls {
     padding: 10px 24px;
@@ -537,6 +689,106 @@
     background: rgba(255,255,255,.25);
   }
 
+  /* ── Quick-Add FAB ── */
+  #fab-add {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #0d1117;
+    font-size: 28px; font-weight: 300;
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(88,166,255,.45);
+    z-index: 200;
+    transition: transform .15s, box-shadow .15s;
+  }
+  #fab-add:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(88,166,255,.6); }
+
+  #fab-popover {
+    position: fixed;
+    bottom: 92px; right: 28px;
+    width: 300px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.6);
+    z-index: 201;
+    display: none;
+  }
+  #fab-popover.visible { display: block; }
+  #fab-popover h4 { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+  #fab-ticker-input {
+    width: 100%; padding: 8px 12px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text); font-size: 13px;
+    outline: none; transition: border-color .15s;
+    margin-bottom: 8px;
+  }
+  #fab-ticker-input:focus { border-color: var(--accent); }
+  #fab-lookup-info { font-size: 12px; color: var(--text2); min-height: 18px; margin-bottom: 8px; }
+  #fab-lookup-info .wl-name { color: var(--text); font-weight: 600; }
+  #fab-add-btn { width: 100%; }
+  #fab-msg { font-size: 12px; margin-top: 6px; text-align: center; }
+  #fab-msg.ok  { color: var(--green); }
+  #fab-msg.err { color: var(--red); }
+
+  /* ── Learn Page ── */
+  #learn-page {
+    display: none;
+    padding: 28px 24px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  #learn-page.visible { display: block; }
+
+  .learn-search-wrap {
+    margin-bottom: 24px;
+  }
+  #learn-search {
+    width: 100%; max-width: 480px;
+    padding: 10px 16px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text); font-size: 14px;
+    outline: none; transition: border-color .15s;
+  }
+  #learn-search:focus { border-color: var(--accent); }
+
+  .learn-category {
+    margin-bottom: 32px;
+  }
+  .learn-category h2 {
+    font-size: 13px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px; margin-bottom: 14px;
+  }
+  .term-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+  .term-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px;
+    transition: border-color .15s;
+  }
+  .term-card:hover { border-color: var(--accent); }
+  .term-card .term-name {
+    font-size: 14px; font-weight: 700; color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .term-card .term-def {
+    font-size: 13px; color: var(--text2); line-height: 1.55;
+  }
+  .term-card .term-example {
+    margin-top: 8px; font-size: 12px;
+    color: var(--yellow); font-style: italic;
+  }
+  .term-card.hidden { display: none; }
+
   /* ── Responsive ── */
   @media (max-width: 640px) {
     header { padding: 0 12px; }
@@ -586,10 +838,25 @@
   <button class="tab" id="tab-tech"           onclick="switchTab('tech')">
     Tech Stocks <span class="tab-badge" id="badge-tech">—</span>
   </button>
+  <button class="tab" id="tab-watchlist"      onclick="switchTab('watchlist')">
+    ★ Watchlist <span class="tab-badge" id="badge-watchlist">0</span>
+  </button>
+  <button class="tab" id="tab-etf"            onclick="switchTab('etf')">
+    ETFs <span class="tab-badge" id="badge-etf">—</span>
+  </button>
+  <button class="tab" id="tab-etfstocks"      onclick="switchTab('etfstocks')">
+    ★ ETF Stocks <span class="tab-badge" id="badge-etfstocks">0</span>
+  </button>
   <button class="tab" id="tab-marketcap"      onclick="switchTab('marketcap')">
     Top 500 by Market Cap <span class="tab-badge" id="badge-marketcap">—</span>
   </button>
+  <button class="tab" id="tab-learn"          onclick="switchTab('learn')">
+    📚 Learn
+  </button>
 </div>
+
+<!-- Stock View (hidden when Learn tab is active) -->
+<div id="stock-view">
 
 <!-- Summary Bar -->
 <div class="summary-bar">
@@ -611,7 +878,7 @@
   <div class="stat-card">
     <div class="label">Avg 1-Month Return</div>
     <div class="value" id="sum-avg-month">—</div>
-    <div class="sub">Across all S&amp;P 500</div>
+    <div class="sub" id="sum-avg-sub">Across current view</div>
   </div>
   <div class="stat-card">
     <div class="label">Best 1-Month</div>
@@ -693,6 +960,137 @@
   <span class="penny-threshold-badge">≥ 30% Growth Filter</span>
 </div>
 
+<!-- Watchlist Add Panel -->
+<div id="watchlist-panel">
+  <div id="watch-search-wrap">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="watch-input" placeholder="Enter ticker (e.g. AAPL, TSLA)…"
+           oninput="watchLookupDebounced()" onkeydown="if(event.key==='Enter') watchAdd()" />
+  </div>
+  <div id="watch-lookup-result"></div>
+  <button class="btn btn-primary" id="watch-add-btn" onclick="watchAdd()" style="display:none">+ Add to Watchlist</button>
+  <span id="watch-msg"></span>
+  <button class="btn btn-secondary" onclick="fetch('/api/watchlist/refresh').then(()=>fetchWatchlistData())" style="margin-left:auto">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+    </svg>
+    Refresh Prices
+  </button>
+</div>
+
+<!-- ETF Stocks Add Panel -->
+<div id="etfstocks-panel">
+  <div id="etfs-search-wrap">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="etfs-input" placeholder="Search ETF or stock ticker (e.g. VOO, QQQ, SPY)…"
+           oninput="etfsLookupDebounced()" onkeydown="if(event.key==='Enter') etfsAdd()" />
+  </div>
+  <div id="etfs-lookup-result"></div>
+  <button class="btn btn-primary" id="etfs-add-btn" onclick="etfsAdd()" style="display:none">+ Add to ETF Stocks</button>
+  <span id="etfs-msg"></span>
+  <button class="btn btn-secondary" id="hy-suggest-btn" onclick="hyToggle(event)">
+    💰 Suggest High Yield ETFs
+  </button>
+  <button class="btn btn-secondary" onclick="fetch('/api/etf-stocks/refresh').then(()=>fetchEtfStocksData())" style="margin-left:auto">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+    </svg>
+    Refresh Prices
+  </button>
+</div>
+
+<!-- High-Yield ETF Suggest Popover -->
+<div id="hy-popover">
+  <h3>💰 High Yield ETF Suggestions <button onclick="document.getElementById('hy-popover').classList.remove('visible')">✕</button></h3>
+
+  <div class="hy-group">
+    <div class="hy-group-label">📈 Covered Call (Highest Income)</div>
+    <div class="hy-items">
+      <div class="hy-item"><span class="hy-ticker">JEPI</span><span class="hy-name">JPMorgan Eq. Premium</span><span class="hy-yield">~7–9%</span><button class="hy-add-btn" onclick="hyAdd('JEPI',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">JEPQ</span><span class="hy-name">JPMorgan Nasdaq Eq. Prem.</span><span class="hy-yield">~9–11%</span><button class="hy-add-btn" onclick="hyAdd('JEPQ',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">QYLD</span><span class="hy-name">Global X NASDAQ 100 CC</span><span class="hy-yield">~11–13%</span><button class="hy-add-btn" onclick="hyAdd('QYLD',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">XYLD</span><span class="hy-name">Global X S&amp;P 500 CC</span><span class="hy-yield">~9–11%</span><button class="hy-add-btn" onclick="hyAdd('XYLD',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">RYLD</span><span class="hy-name">Global X Russell 2000 CC</span><span class="hy-yield">~12–14%</span><button class="hy-add-btn" onclick="hyAdd('RYLD',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">DIVO</span><span class="hy-name">Amplify CWP Enh. Div.</span><span class="hy-yield">~4–5%</span><button class="hy-add-btn" onclick="hyAdd('DIVO',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">SPYI</span><span class="hy-name">NEOS S&amp;P 500 HI</span><span class="hy-yield">~10–12%</span><button class="hy-add-btn" onclick="hyAdd('SPYI',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">GPIQ</span><span class="hy-name">Goldman Sachs Nasdaq EI</span><span class="hy-yield">~8–10%</span><button class="hy-add-btn" onclick="hyAdd('GPIQ',this)">+</button></div>
+    </div>
+  </div>
+
+  <div class="hy-group">
+    <div class="hy-group-label">💵 Dividend Growth</div>
+    <div class="hy-items">
+      <div class="hy-item"><span class="hy-ticker">SCHD</span><span class="hy-name">Schwab US Dividend Eq.</span><span class="hy-yield">~3.5–4%</span><button class="hy-add-btn" onclick="hyAdd('SCHD',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">VYM</span><span class="hy-name">Vanguard High Div. Yield</span><span class="hy-yield">~3–3.5%</span><button class="hy-add-btn" onclick="hyAdd('VYM',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">DVY</span><span class="hy-name">iShares Select Dividend</span><span class="hy-yield">~4–5%</span><button class="hy-add-btn" onclick="hyAdd('DVY',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">HDV</span><span class="hy-name">iShares Core High Div.</span><span class="hy-yield">~4–4.5%</span><button class="hy-add-btn" onclick="hyAdd('HDV',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">SDY</span><span class="hy-name">SPDR S&amp;P Dividend</span><span class="hy-yield">~2.5–3%</span><button class="hy-add-btn" onclick="hyAdd('SDY',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">DGRO</span><span class="hy-name">iShares Div. Growth</span><span class="hy-yield">~2–2.5%</span><button class="hy-add-btn" onclick="hyAdd('DGRO',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">NOBL</span><span class="hy-name">ProShares S&amp;P 500 Div. Arist.</span><span class="hy-yield">~2–2.5%</span><button class="hy-add-btn" onclick="hyAdd('NOBL',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">PEY</span><span class="hy-name">Invesco High Yield Eq. Div.</span><span class="hy-yield">~4–5%</span><button class="hy-add-btn" onclick="hyAdd('PEY',this)">+</button></div>
+    </div>
+  </div>
+
+  <div class="hy-group">
+    <div class="hy-group-label">🏦 High-Yield Bonds</div>
+    <div class="hy-items">
+      <div class="hy-item"><span class="hy-ticker">HYG</span><span class="hy-name">iShares iBoxx $ HY Corp</span><span class="hy-yield">~5–6%</span><button class="hy-add-btn" onclick="hyAdd('HYG',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">JNK</span><span class="hy-name">SPDR Bloomberg HY Bond</span><span class="hy-yield">~5.5–6.5%</span><button class="hy-add-btn" onclick="hyAdd('JNK',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">SHYG</span><span class="hy-name">iShares 0–5 Yr HY Corp</span><span class="hy-yield">~6–7%</span><button class="hy-add-btn" onclick="hyAdd('SHYG',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">USHY</span><span class="hy-name">iShares Broad USD HY</span><span class="hy-yield">~6–7%</span><button class="hy-add-btn" onclick="hyAdd('USHY',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">BKLN</span><span class="hy-name">Invesco Senior Loan</span><span class="hy-yield">~7–9%</span><button class="hy-add-btn" onclick="hyAdd('BKLN',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">FALN</span><span class="hy-name">iShares Fallen Angels</span><span class="hy-yield">~5–6%</span><button class="hy-add-btn" onclick="hyAdd('FALN',this)">+</button></div>
+    </div>
+  </div>
+
+  <div class="hy-group">
+    <div class="hy-group-label">🏢 REITs</div>
+    <div class="hy-items">
+      <div class="hy-item"><span class="hy-ticker">VNQ</span><span class="hy-name">Vanguard Real Estate</span><span class="hy-yield">~4–5%</span><button class="hy-add-btn" onclick="hyAdd('VNQ',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">SCHH</span><span class="hy-name">Schwab US REIT</span><span class="hy-yield">~3.5–4.5%</span><button class="hy-add-btn" onclick="hyAdd('SCHH',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">IYR</span><span class="hy-name">iShares US Real Estate</span><span class="hy-yield">~3–4%</span><button class="hy-add-btn" onclick="hyAdd('IYR',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">REM</span><span class="hy-name">iShares Mortgage REIT</span><span class="hy-yield">~9–12%</span><button class="hy-add-btn" onclick="hyAdd('REM',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">MORT</span><span class="hy-name">VanEck Mortgage REIT</span><span class="hy-yield">~10–13%</span><button class="hy-add-btn" onclick="hyAdd('MORT',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">KBWY</span><span class="hy-name">Invesco KBW Prem. Yield</span><span class="hy-yield">~6–8%</span><button class="hy-add-btn" onclick="hyAdd('KBWY',this)">+</button></div>
+    </div>
+  </div>
+
+  <div class="hy-group">
+    <div class="hy-group-label">⭐ Preferred Stock</div>
+    <div class="hy-items">
+      <div class="hy-item"><span class="hy-ticker">PFF</span><span class="hy-name">iShares Preferred &amp; Income</span><span class="hy-yield">~6–7%</span><button class="hy-add-btn" onclick="hyAdd('PFF',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">PGX</span><span class="hy-name">Invesco Preferred</span><span class="hy-yield">~6–7%</span><button class="hy-add-btn" onclick="hyAdd('PGX',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">PFFD</span><span class="hy-name">Global X US Preferred</span><span class="hy-yield">~6–7%</span><button class="hy-add-btn" onclick="hyAdd('PFFD',this)">+</button></div>
+    </div>
+  </div>
+
+  <div class="hy-group">
+    <div class="hy-group-label">🌍 International High Dividend</div>
+    <div class="hy-items">
+      <div class="hy-item"><span class="hy-ticker">VYMI</span><span class="hy-name">Vanguard Intl High Div.</span><span class="hy-yield">~4–5%</span><button class="hy-add-btn" onclick="hyAdd('VYMI',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">IDV</span><span class="hy-name">iShares Intl Select Div.</span><span class="hy-yield">~5–6%</span><button class="hy-add-btn" onclick="hyAdd('IDV',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">SDIV</span><span class="hy-name">Global X SuperDividend</span><span class="hy-yield">~9–11%</span><button class="hy-add-btn" onclick="hyAdd('SDIV',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">DWX</span><span class="hy-name">SPDR S&amp;P Intl Div.</span><span class="hy-yield">~4–6%</span><button class="hy-add-btn" onclick="hyAdd('DWX',this)">+</button></div>
+    </div>
+  </div>
+
+  <div class="hy-group">
+    <div class="hy-group-label">⚡ Sector Income (Energy/Infra)</div>
+    <div class="hy-items">
+      <div class="hy-item"><span class="hy-ticker">AMLP</span><span class="hy-name">Alerian MLP</span><span class="hy-yield">~7–9%</span><button class="hy-add-btn" onclick="hyAdd('AMLP',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">MLPA</span><span class="hy-name">Global X MLP</span><span class="hy-yield">~6–8%</span><button class="hy-add-btn" onclick="hyAdd('MLPA',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">IFRA</span><span class="hy-name">iShares US Infrastructure</span><span class="hy-yield">~3–4%</span><button class="hy-add-btn" onclick="hyAdd('IFRA',this)">+</button></div>
+      <div class="hy-item"><span class="hy-ticker">UTSL</span><span class="hy-name">Direxion Daily Utilities 3x</span><span class="hy-yield">~5–7%</span><button class="hy-add-btn" onclick="hyAdd('UTSL',this)">+</button></div>
+    </div>
+  </div>
+</div>
+
 <!-- Table -->
 <div class="table-outer">
 <div class="table-wrap">
@@ -723,6 +1121,130 @@
 <!-- Pagination -->
 <div class="pagination" id="pagination"></div>
 
+</div><!-- /stock-view -->
+
+<!-- Learn Page -->
+<div id="learn-page">
+  <div class="learn-search-wrap">
+    <input type="text" id="learn-search" placeholder="Search terms… (e.g. P/E ratio, dividend, bear market)" oninput="learnSearch(this.value)" />
+  </div>
+
+  <div class="learn-category" id="lcat-basics">
+    <h2>Market Basics</h2>
+    <div class="term-grid">
+      <div class="term-card"><div class="term-name">Stock (Share / Equity)</div><div class="term-def">A unit of ownership in a company. Buying stock makes you a part-owner (shareholder) entitled to a portion of profits and assets.</div><div class="term-example">Example: Owning 10 AAPL shares means you own a tiny slice of Apple Inc.</div></div>
+      <div class="term-card"><div class="term-name">Bull Market</div><div class="term-def">A period of rising stock prices, typically defined as a 20%+ gain from a recent low. Associated with investor optimism and economic growth.</div><div class="term-example">Example: The S&P 500 ran in a bull market for most of 2009–2020.</div></div>
+      <div class="term-card"><div class="term-name">Bear Market</div><div class="term-def">A period of falling stock prices — a 20%+ decline from a recent high. Reflects pessimism, often tied to economic downturns.</div><div class="term-example">Example: The COVID-19 crash in March 2020 briefly entered bear-market territory.</div></div>
+      <div class="term-card"><div class="term-name">Market Correction</div><div class="term-def">A decline of 10–20% in a stock or index from its recent peak. Less severe than a bear market; often considered healthy.</div></div>
+      <div class="term-card"><div class="term-name">Market Capitalization (Market Cap)</div><div class="term-def">The total market value of a company's outstanding shares. Calculated as: Share Price × Total Shares Outstanding.</div><div class="term-example">Example: If a stock trades at $50 and has 1B shares, market cap = $50B.</div></div>
+      <div class="term-card"><div class="term-name">Stock Exchange</div><div class="term-def">A marketplace where stocks are bought and sold. Major US exchanges include the NYSE (New York Stock Exchange) and NASDAQ.</div></div>
+      <div class="term-card"><div class="term-name">Index</div><div class="term-def">A benchmark tracking a group of stocks to represent overall market performance. Common examples: S&P 500, Dow Jones Industrial Average, NASDAQ Composite.</div></div>
+      <div class="term-card"><div class="term-name">IPO (Initial Public Offering)</div><div class="term-def">When a private company first sells shares to the public on a stock exchange, raising capital and allowing public ownership.</div><div class="term-example">Example: Google went public via IPO in August 2004.</div></div>
+      <div class="term-card"><div class="term-name">Ticker Symbol</div><div class="term-def">A short abbreviation used to identify a publicly traded company on an exchange.</div><div class="term-example">Example: AAPL = Apple, TSLA = Tesla, MSFT = Microsoft.</div></div>
+      <div class="term-card"><div class="term-name">Trading Volume</div><div class="term-def">The number of shares traded during a given period. High volume often signals strong investor interest or news-driven activity.</div></div>
+    </div>
+  </div>
+
+  <div class="learn-category" id="lcat-price">
+    <h2>Price & Returns</h2>
+    <div class="term-grid">
+      <div class="term-card"><div class="term-name">Bid / Ask Price</div><div class="term-def">The <strong style="color:var(--text)">bid</strong> is the highest price a buyer will pay; the <strong style="color:var(--text)">ask</strong> is the lowest price a seller will accept. The difference is the <em>spread</em>.</div></div>
+      <div class="term-card"><div class="term-name">52-Week High / Low</div><div class="term-def">The highest and lowest price a stock has traded at over the past 52 weeks. Used to gauge current price relative to its recent range.</div></div>
+      <div class="term-card"><div class="term-name">All-Time High (ATH)</div><div class="term-def">The highest price a stock has ever reached in its entire trading history.</div></div>
+      <div class="term-card"><div class="term-name">Day Change (%)</div><div class="term-def">The percentage the stock price moved from yesterday's closing price to today's current (or closing) price.</div></div>
+      <div class="term-card"><div class="term-name">Capital Gains</div><div class="term-def">Profit earned when you sell a stock for more than you paid for it. Short-term (held &lt;1 year) is taxed as ordinary income; long-term at a lower rate.</div></div>
+      <div class="term-card"><div class="term-name">Return on Investment (ROI)</div><div class="term-def">The gain or loss on an investment relative to its cost, expressed as a percentage: (Gain − Cost) / Cost × 100.</div><div class="term-example">Example: Buy at $100, sell at $130 → ROI = 30%.</div></div>
+      <div class="term-card"><div class="term-name">Volatility</div><div class="term-def">How much a stock's price fluctuates over time. High volatility = large price swings. Often measured by standard deviation or the VIX index.</div></div>
+      <div class="term-card"><div class="term-name">Stock Split</div><div class="term-def">When a company divides its existing shares into multiple new shares, lowering the price per share while keeping total value the same.</div><div class="term-example">Example: A 4-for-1 split turns 1 share at $400 into 4 shares at $100 each.</div></div>
+    </div>
+  </div>
+
+  <div class="learn-category" id="lcat-valuation">
+    <h2>Valuation Metrics</h2>
+    <div class="term-grid">
+      <div class="term-card"><div class="term-name">P/E Ratio (Price-to-Earnings)</div><div class="term-def">Stock price divided by earnings per share (EPS). Indicates how much investors pay per dollar of earnings. A high P/E may mean the stock is expensive or high-growth.</div><div class="term-example">Example: Stock at $50, EPS = $2 → P/E = 25.</div></div>
+      <div class="term-card"><div class="term-name">EPS (Earnings Per Share)</div><div class="term-def">Net profit divided by the number of outstanding shares. Higher EPS generally signals better profitability.</div></div>
+      <div class="term-card"><div class="term-name">P/B Ratio (Price-to-Book)</div><div class="term-def">Stock price divided by book value per share (total assets minus liabilities). Useful for valuing asset-heavy companies like banks.</div></div>
+      <div class="term-card"><div class="term-name">P/S Ratio (Price-to-Sales)</div><div class="term-def">Market cap divided by total revenue. Useful for companies that aren't yet profitable — especially early-stage growth stocks.</div></div>
+      <div class="term-card"><div class="term-name">Forward P/E</div><div class="term-def">Like the P/E ratio but uses projected (future) earnings instead of historical ones. Reflects market expectations for growth.</div></div>
+      <div class="term-card"><div class="term-name">PEG Ratio</div><div class="term-def">P/E divided by the expected earnings growth rate. A PEG of 1 is considered fair value; below 1 may indicate undervaluation.</div></div>
+      <div class="term-card"><div class="term-name">Intrinsic Value</div><div class="term-def">An estimate of what a stock is actually worth based on fundamentals (earnings, growth, risk), independent of its current market price.</div></div>
+      <div class="term-card"><div class="term-name">Book Value</div><div class="term-def">A company's total assets minus total liabilities — what shareholders would theoretically receive if the company were liquidated today.</div></div>
+      <div class="term-card"><div class="term-name">EBITDA</div><div class="term-def">Earnings Before Interest, Taxes, Depreciation, and Amortization. A proxy for operating profitability, stripping out financing and accounting decisions.</div></div>
+    </div>
+  </div>
+
+  <div class="learn-category" id="lcat-income">
+    <h2>Dividends & Income</h2>
+    <div class="term-grid">
+      <div class="term-card"><div class="term-name">Dividend</div><div class="term-def">A portion of company profits paid out to shareholders, usually quarterly. Not all stocks pay dividends — growth companies often reinvest earnings instead.</div></div>
+      <div class="term-card"><div class="term-name">Dividend Yield</div><div class="term-def">Annual dividend per share divided by the stock price, expressed as a percentage. Shows how much income you earn relative to price.</div><div class="term-example">Example: $2 annual dividend on a $40 stock → 5% yield.</div></div>
+      <div class="term-card"><div class="term-name">Ex-Dividend Date</div><div class="term-def">You must own the stock before this date to receive the upcoming dividend. The stock price typically drops by roughly the dividend amount on this date.</div></div>
+      <div class="term-card"><div class="term-name">Payout Ratio</div><div class="term-def">Percentage of earnings paid as dividends. A very high ratio (&gt;80%) may be unsustainable; low means more reinvestment into growth.</div></div>
+      <div class="term-card"><div class="term-name">DRIP (Dividend Reinvestment Plan)</div><div class="term-def">Automatically reinvesting dividends to buy more shares instead of receiving cash. Compounds returns over time.</div></div>
+    </div>
+  </div>
+
+  <div class="learn-category" id="lcat-orders">
+    <h2>Order Types & Trading</h2>
+    <div class="term-grid">
+      <div class="term-card"><div class="term-name">Market Order</div><div class="term-def">Buy or sell a stock immediately at the best available current price. Fast execution but price is not guaranteed.</div></div>
+      <div class="term-card"><div class="term-name">Limit Order</div><div class="term-def">Buy or sell only at a specific price or better. Gives price control but may not execute if the market doesn't reach your limit.</div><div class="term-example">Example: Limit buy at $95 — only fills if the price drops to $95 or below.</div></div>
+      <div class="term-card"><div class="term-name">Stop-Loss Order</div><div class="term-def">Automatically sells a stock when it falls to a specified price, limiting your downside loss.</div><div class="term-example">Example: Buy at $100, set stop-loss at $85 — auto-sells if price drops to $85.</div></div>
+      <div class="term-card"><div class="term-name">Stop-Limit Order</div><div class="term-def">Combines a stop trigger with a limit price. When the stop triggers, a limit order is placed — giving more price control than a stop-loss alone.</div></div>
+      <div class="term-card"><div class="term-name">Short Selling</div><div class="term-def">Borrowing shares and selling them, hoping to buy them back cheaper later. Profits from falling prices but has unlimited loss potential.</div></div>
+      <div class="term-card"><div class="term-name">Margin Trading</div><div class="term-def">Using borrowed money from your broker to buy more stock than you could with your own capital alone. Amplifies both gains and losses.</div></div>
+      <div class="term-card"><div class="term-name">Day Trading</div><div class="term-def">Buying and selling stocks within the same trading day, never holding overnight. Requires active monitoring and carries high risk.</div></div>
+      <div class="term-card"><div class="term-name">Liquidity</div><div class="term-def">How easily a stock can be bought or sold without significantly affecting its price. Large-cap stocks are highly liquid; penny stocks often are not.</div></div>
+    </div>
+  </div>
+
+  <div class="learn-category" id="lcat-analysis">
+    <h2>Analysis & Strategy</h2>
+    <div class="term-grid">
+      <div class="term-card"><div class="term-name">Fundamental Analysis</div><div class="term-def">Evaluating a stock based on financial data — earnings, revenue, growth rates, balance sheet — to determine its intrinsic value.</div></div>
+      <div class="term-card"><div class="term-name">Technical Analysis</div><div class="term-def">Using historical price charts and patterns (moving averages, RSI, MACD) to predict future price movements.</div></div>
+      <div class="term-card"><div class="term-name">Moving Average (MA)</div><div class="term-def">The average closing price over a set number of days (e.g. 50-day, 200-day MA). Smooths out noise to show trend direction.</div></div>
+      <div class="term-card"><div class="term-name">RSI (Relative Strength Index)</div><div class="term-def">A momentum indicator (0–100) showing if a stock is overbought (&gt;70) or oversold (&lt;30). Helps identify potential reversal points.</div></div>
+      <div class="term-card"><div class="term-name">Support & Resistance</div><div class="term-def"><strong style="color:var(--text)">Support</strong>: a price level where buying interest is strong enough to stop a decline. <strong style="color:var(--text)">Resistance</strong>: a level where selling pressure tends to stop a rise.</div></div>
+      <div class="term-card"><div class="term-name">Diversification</div><div class="term-def">Spreading investments across different assets, sectors, or geographies to reduce risk. "Don't put all your eggs in one basket."</div></div>
+      <div class="term-card"><div class="term-name">Dollar-Cost Averaging (DCA)</div><div class="term-def">Investing a fixed dollar amount at regular intervals regardless of price. Reduces impact of volatility by buying more shares when prices are low.</div></div>
+      <div class="term-card"><div class="term-name">Hedge</div><div class="term-def">An investment taken to reduce the risk of adverse price movements in another investment. Options and inverse ETFs are common hedging tools.</div></div>
+      <div class="term-card"><div class="term-name">Portfolio Rebalancing</div><div class="term-def">Periodically adjusting holdings back to target allocations after price changes have shifted the proportions.</div></div>
+    </div>
+  </div>
+
+  <div class="learn-category" id="lcat-instruments">
+    <h2>Investment Instruments</h2>
+    <div class="term-grid">
+      <div class="term-card"><div class="term-name">ETF (Exchange-Traded Fund)</div><div class="term-def">A basket of securities (stocks, bonds, commodities) that trades on an exchange like a single stock. Offers diversification at low cost.</div><div class="term-example">Example: SPY tracks the S&P 500 index.</div></div>
+      <div class="term-card"><div class="term-name">Mutual Fund</div><div class="term-def">A pooled investment vehicle managed by professionals. Unlike ETFs, mutual funds are priced once per day after market close.</div></div>
+      <div class="term-card"><div class="term-name">Bond</div><div class="term-def">A debt instrument where you lend money to a company or government in exchange for periodic interest payments and return of principal at maturity.</div></div>
+      <div class="term-card"><div class="term-name">Option</div><div class="term-def">A contract giving the right (not obligation) to buy (<em>call</em>) or sell (<em>put</em>) a stock at a specified price before expiration.</div></div>
+      <div class="term-card"><div class="term-name">Futures</div><div class="term-def">A contract to buy or sell an asset at a predetermined price on a future date. Common in commodities, indexes, and currencies.</div></div>
+      <div class="term-card"><div class="term-name">REITs (Real Estate Investment Trusts)</div><div class="term-def">Companies that own income-producing real estate. Trade like stocks and must pay at least 90% of taxable income as dividends.</div></div>
+      <div class="term-card"><div class="term-name">Index Fund</div><div class="term-def">A passive fund designed to replicate the performance of a market index (like the S&P 500). Known for low fees and broad diversification.</div></div>
+      <div class="term-card"><div class="term-name">Blue Chip Stock</div><div class="term-def">Shares of large, well-established, financially stable companies with a long track record. Generally considered lower risk.</div><div class="term-example">Example: Apple, Johnson & Johnson, JPMorgan Chase.</div></div>
+      <div class="term-card"><div class="term-name">Penny Stock</div><div class="term-def">Shares trading below $5 (sometimes defined as below $1). Often small companies with low liquidity and high volatility — high risk, high reward potential.</div></div>
+    </div>
+  </div>
+
+  <div class="learn-category" id="lcat-risk">
+    <h2>Risk & Psychology</h2>
+    <div class="term-grid">
+      <div class="term-card"><div class="term-name">Risk Tolerance</div><div class="term-def">The degree of variability in investment returns you're willing to accept. Influenced by age, income, goals, and emotional temperament.</div></div>
+      <div class="term-card"><div class="term-name">FOMO (Fear of Missing Out)</div><div class="term-def">Emotional bias that causes investors to buy into rising assets impulsively for fear of missing gains — often near market tops.</div></div>
+      <div class="term-card"><div class="term-name">FUD (Fear, Uncertainty, Doubt)</div><div class="term-def">Negative sentiment spread about an asset, causing panic selling. Can be legitimate concerns or deliberate market manipulation.</div></div>
+      <div class="term-card"><div class="term-name">Drawdown</div><div class="term-def">The peak-to-trough decline during a specific period. A 30% drawdown means a portfolio fell 30% from its highest point.</div></div>
+      <div class="term-card"><div class="term-name">Beta</div><div class="term-def">Measures a stock's volatility relative to the market. Beta &gt;1 = more volatile than market; &lt;1 = less volatile.</div><div class="term-example">Example: Beta of 1.5 means the stock tends to move 50% more than the index.</div></div>
+      <div class="term-card"><div class="term-name">Alpha</div><div class="term-def">The excess return an investment generates above its benchmark. Positive alpha means outperformance; it's the goal of active management.</div></div>
+      <div class="term-card"><div class="term-name">Sharpe Ratio</div><div class="term-def">Return minus risk-free rate, divided by standard deviation. Measures return per unit of risk. Higher is better.</div></div>
+      <div class="term-card"><div class="term-name">Margin Call</div><div class="term-def">When a broker demands you deposit more funds because your margin account has fallen below the required minimum — triggered by large losses on leveraged positions.</div></div>
+    </div>
+  </div>
+
+</div>
+
 <!-- Sparkline Tooltip -->
 <div id="spark-tooltip">
   <div class="tt-date" id="tt-date"></div>
@@ -740,12 +1262,15 @@
 
 <script>
 // ── State ──────────────────────────────────────────────────────────────────
-let allStocks    = [];
-let pennyStocks  = [];
-let techStocks   = [];
-let filtered     = [];
+let allStocks      = [];
+let pennyStocks    = [];
+let techStocks     = [];
+let etfStocks       = [];
+let etfCustomStocks = [];
+let watchlistStocks = [];
+let filtered       = [];
 let currentPage  = 1;
-let currentTab   = 'sp500';       // 'sp500' | 'penny' | 'marketcap'
+let currentTab   = 'sp500';       // 'sp500' | 'penny' | 'tech' | 'etf' | 'marketcap' | 'watchlist'
 const PAGE_SIZE  = 50;
 let pollInterval = null;
 let pennyPriceTier = '5';         // '5' | '25'
@@ -765,6 +1290,9 @@ window.addEventListener('DOMContentLoaded', () => {
   fetchData();
   fetchPennyData();
   fetchTechData();
+  fetchEtfData();
+  fetchEtfStocksData();
+  fetchWatchlistData();
 });
 
 // ── Tab switching ──────────────────────────────────────────────────────────
@@ -773,8 +1301,14 @@ function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
 
-  // Show/hide penny controls (also hide on tech tab)
+  const isLearn = tab === 'learn';
+  document.getElementById('stock-view').style.display = isLearn ? 'none' : '';
+  document.getElementById('learn-page').classList.toggle('visible', isLearn);
+  if (isLearn) return;
+
   document.getElementById('penny-controls').classList.toggle('visible', tab === 'penny');
+  document.getElementById('watchlist-panel').classList.toggle('visible', tab === 'watchlist');
+  document.getElementById('etfstocks-panel').classList.toggle('visible', tab === 'etfstocks');
 
   // Update table header and sort options
   updateTableHeader();
@@ -786,7 +1320,7 @@ function switchTab(tab) {
     sortSel.value = 'market_cap'; dirSel.value = 'desc';
   } else if (tab === 'penny') {
     sortSel.value = 'month_pct';  dirSel.value = 'desc';
-  } else if (tab === 'tech') {
+  } else if (tab === 'tech' || tab === 'etf' || tab === 'etfstocks' || tab === 'watchlist') {
     sortSel.value = 'month_pct';  dirSel.value = 'desc';
   } else {
     sortSel.value = 'rank';       dirSel.value = 'asc';
@@ -881,6 +1415,44 @@ async function fetchTechData() {
   } catch { /* server may still be starting */ }
 }
 
+async function fetchEtfData() {
+  try {
+    const res  = await fetch('/api/etfs');
+    const json = await res.json();
+    if (json.status === 'loading' || json.status === 'idle') {
+      setTimeout(fetchEtfData, 5000);
+      return;
+    }
+    if (json.status === 'ready' && json.data.length) {
+      etfStocks = json.data.map((s, i) => ({ ...s, rank: i + 1 }));
+      document.getElementById('badge-etf').textContent = etfStocks.length;
+      if (currentTab === 'etf') applyFilters();
+    }
+  } catch { /* server may still be starting */ }
+}
+
+async function fetchEtfStocksData() {
+  try {
+    const res  = await fetch('/api/etf-stocks');
+    const json = await res.json();
+    if (json.status === 'loading') { setTimeout(fetchEtfStocksData, 3000); return; }
+    etfCustomStocks = (json.data || []).map((s, i) => ({ ...s, rank: i + 1 }));
+    document.getElementById('badge-etfstocks').textContent = etfCustomStocks.length;
+    if (currentTab === 'etfstocks') applyFilters();
+  } catch {}
+}
+
+async function fetchWatchlistData() {
+  try {
+    const res  = await fetch('/api/watchlist');
+    const json = await res.json();
+    if (json.status === 'loading') { setTimeout(fetchWatchlistData, 3000); return; }
+    watchlistStocks = (json.data || []).map((s, i) => ({ ...s, rank: i + 1 }));
+    document.getElementById('badge-watchlist').textContent = watchlistStocks.length;
+    if (currentTab === 'watchlist') applyFilters();
+  } catch {}
+}
+
 async function refreshData() {
   setBadge('loading', 'Refreshing…');
   showOverlay(true);
@@ -896,22 +1468,38 @@ async function refreshData() {
 
 // ── Summary Stats ──────────────────────────────────────────────────────────
 function updateSummary(stocks) {
-  if (!stocks || !stocks.length) return;
+  const tabLabel = { sp500: 'S&P 500', penny: 'Penny Stocks', tech: 'Tech Stocks',
+                     etf: 'ETFs', etfstocks: 'ETF Stocks', marketcap: 'Top by Mkt Cap', watchlist: 'Watchlist' };
+  const label = tabLabel[currentTab] || 'filtered results';
+
+  if (!stocks || !stocks.length) {
+    setText('sum-total',     0);
+    document.getElementById('sum-total-sub').textContent = label;
+    setText('sum-gainers',   '—');
+    setText('sum-losers',    '—');
+    setText('sum-avg-month', '—');
+    setText('sum-best',      '—');
+    setText('sum-best-name', '—');
+    setText('sum-worst',     '—');
+    setText('sum-worst-name','—');
+    return;
+  }
+
   const gainers  = stocks.filter(s => s.day_pct > 0).length;
   const losers   = stocks.filter(s => s.day_pct < 0).length;
   const avgMonth = stocks.reduce((a, s) => a + (s.month_pct || 0), 0) / stocks.length;
   const best     = stocks.reduce((a, b) => (b.month_pct || 0) > (a.month_pct || 0) ? b : a, stocks[0]);
   const worst    = stocks.reduce((a, b) => (b.month_pct || 0) < (a.month_pct || 0) ? b : a, stocks[0]);
 
-  const tabLabel = { sp500: 'S&P 500', penny: 'Penny Stocks', tech: 'Tech Stocks', marketcap: 'Top by Mkt Cap' };
-  setText('sum-total',     stocks.length);
-  document.getElementById('sum-total-sub').textContent = tabLabel[currentTab] || 'filtered results';
-  setText('sum-gainers',   gainers);
-  setText('sum-losers',    losers);
-  setText('sum-avg-month', fmtPct(avgMonth));
-  setText('sum-best',      fmtPct(best.month_pct || 0));
-  setText('sum-best-name', best.symbol);
-  setText('sum-worst',     fmtPct(worst.month_pct || 0));
+  setText('sum-total',      stocks.length);
+  document.getElementById('sum-total-sub').textContent = label;
+  document.getElementById('sum-avg-sub').textContent   = `Across ${label.toLowerCase()}`;
+  setText('sum-gainers',    gainers);
+  setText('sum-losers',     losers);
+  setText('sum-avg-month',  fmtPct(avgMonth));
+  setText('sum-best',       fmtPct(best.month_pct || 0));
+  setText('sum-best-name',  best.symbol);
+  setText('sum-worst',      fmtPct(worst.month_pct || 0));
   setText('sum-worst-name', worst.symbol);
 }
 
@@ -938,13 +1526,35 @@ function applyFilters() {
   const PERIOD_FIELD = { '5d':'pct_5d','15d':'pct_15d','45d':'pct_45d',
                           '3mo':'pct_3mo','1y':'pct_1y','5y':'pct_5y' };
 
-  if (currentTab === 'tech') {
+  if (currentTab === 'watchlist') {
+    filtered = watchlistStocks.filter(s => {
+      if (q) return s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q);
+      return true;
+    });
+    document.getElementById('results-count').textContent =
+      `${filtered.length} stock${filtered.length !== 1 ? 's' : ''} in watchlist`;
+  } else if (currentTab === 'etfstocks') {
+    filtered = etfCustomStocks.filter(s => {
+      if (q) return s.symbol.toLowerCase().includes(q) || (s.name || '').toLowerCase().includes(q);
+      return true;
+    });
+    document.getElementById('results-count').textContent =
+      `${filtered.length} item${filtered.length !== 1 ? 's' : ''} in ETF Stocks`;
+  } else if (currentTab === 'tech') {
     filtered = techStocks.filter(s => {
       if (q) return s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q);
       return true;
     });
     document.getElementById('results-count').textContent =
       `Showing ${filtered.length} of ${techStocks.length} stocks`;
+  } else if (currentTab === 'etf') {
+    filtered = etfStocks.filter(s => {
+      if (q) return s.symbol.toLowerCase().includes(q) || (s.name || '').toLowerCase().includes(q)
+                     || (s.sector || '').toLowerCase().includes(q);
+      return true;
+    });
+    document.getElementById('results-count').textContent =
+      `Showing ${filtered.length} of ${etfStocks.length} ETFs`;
   } else if (currentTab === 'penny') {
     const maxPrice = parseFloat(pennyPriceTier);
     filtered = pennyStocks.filter(s => {
@@ -1031,7 +1641,8 @@ function updateTableHeader() {
   const thead = document.querySelector('table thead tr');
   const sortSel = document.getElementById('sort-col');
 
-  if (currentTab === 'penny' || currentTab === 'tech') {
+  if (currentTab === 'penny' || currentTab === 'tech' || currentTab === 'etf' || currentTab === 'etfstocks' || currentTab === 'watchlist') {
+    const show30y = currentTab === 'etf';
     thead.innerHTML = `
       <th class="rank">#</th>
       <th onclick="sortBy('symbol')">Ticker <span class="sort-icon">↕</span></th>
@@ -1043,9 +1654,13 @@ function updateTableHeader() {
       <th onclick="sortBy('pct_3mo')" style="text-align:right">3Mo % <span class="sort-icon">↕</span></th>
       <th onclick="sortBy('pct_1y')"  style="text-align:right">1Y % <span class="sort-icon">↕</span></th>
       <th onclick="sortBy('pct_5y')"  style="text-align:right">5Y % <span class="sort-icon">↕</span></th>
-      <th onclick="sortBy('market_cap')" style="text-align:right">Mkt Cap <span class="sort-icon">↕</span></th>
+      ${show30y ? `<th onclick="sortBy('year_pct')" style="text-align:right">10Y % <span class="sort-icon">↕</span></th>` : ''}
+      ${show30y ? `<th onclick="sortBy('pct_30y')" style="text-align:right">30Y % <span class="sort-icon">↕</span></th>` : ''}
+      <th onclick="sortBy('market_cap')" style="text-align:right">AUM <span class="sort-icon">↕</span></th>
       <th>1-Mo Chart</th>
-      <th>5-Year Chart</th>`;
+      <th>1-Year Chart</th>
+      <th>5-Year Chart</th>
+      ${show30y ? '<th style="min-width:200px">30-Year Chart</th>' : ''}`;
     sortSel.innerHTML = `
       <option value="month_pct">Sort: 1-Mo %</option>
       <option value="pct_5d">Sort: 5D %</option>
@@ -1054,7 +1669,9 @@ function updateTableHeader() {
       <option value="pct_3mo">Sort: 3Mo %</option>
       <option value="pct_1y">Sort: 1Y %</option>
       <option value="pct_5y">Sort: 5Y %</option>
-      <option value="market_cap">Sort: Mkt Cap</option>
+      ${show30y ? '<option value="year_pct">Sort: 10Y %</option>' : ''}
+      ${show30y ? '<option value="pct_30y">Sort: 30Y %</option>' : ''}
+      <option value="market_cap">Sort: AUM</option>
       <option value="price">Sort: Price</option>
       <option value="symbol">Sort: Ticker A→Z</option>`;
   } else {
@@ -1099,7 +1716,27 @@ function renderPage() {
     return;
   }
 
-  if (currentTab === 'penny' || currentTab === 'tech') {
+  if (currentTab === 'watchlist') {
+    if (page.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state">
+        <h3>Your watchlist is empty</h3>
+        <p>Type a ticker in the search box above and click "+ Add to Watchlist".</p>
+      </div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = page.map((s, i) => renderWatchRow(s, start + i)).join('');
+  } else if (currentTab === 'etfstocks') {
+    if (page.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state">
+        <h3>Your ETF Stocks list is empty</h3>
+        <p>Type a ticker in the search box above and click "+ Add to ETF Stocks".</p>
+      </div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = page.map((s, i) => renderEtfStockRow(s, start + i)).join('');
+  } else if (currentTab === 'etf') {
+    tbody.innerHTML = page.map((s, i) => renderEtfTabRow(s, start + i)).join('');
+  } else if (currentTab === 'penny' || currentTab === 'tech') {
     tbody.innerHTML = page.map((s, i) => renderPennyRow(s, start + i)).join('');
   } else {
     tbody.innerHTML = page.map((s, i) => renderStockRow(s, start + i)).join('');
@@ -1127,6 +1764,7 @@ function renderStockRow(s, idx) {
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </button>
+      <button class="quick-add-btn${watchlistStocks.some(w=>w.symbol===s.symbol)?' added':''}" id="qab-${esc(s.symbol)}" onclick="quickWatchAdd('${esc(s.symbol)}', this)" title="${watchlistStocks.some(w=>w.symbol===s.symbol)?'Already in watchlist':'Add to watchlist'}">${watchlistStocks.some(w=>w.symbol===s.symbol)?'✓':'+'}</button>
     </td>
     <td class="company-name">${esc(s.name)}<small>${esc(s.sector)}</small></td>
     <td><span class="sector-tag">${esc(s.sector)}</span></td>
@@ -1143,6 +1781,7 @@ function renderStockRow(s, idx) {
 
 function renderPennyRow(s, idx) {
   const spark    = makeSVGSparkline(s.prices      || [], (s.month_pct || 0) >= 0, 120, 40, s.dates      || []);
+  const spark1y  = makeSVGSparkline(s.prices_1y   || [], (s.pct_1y   ?? 0)  >= 0, 160, 48, s.dates_1y   || []);
   const spark5y  = makeSVGSparkline(s.prices_10y  || [], (s.pct_5y   ?? 0)  >= 0, 160, 48, s.dates_10y  || []);
 
   function pctCell(val) {
@@ -1162,6 +1801,7 @@ function renderPennyRow(s, idx) {
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </button>
+      <button class="quick-add-btn${watchlistStocks.some(w=>w.symbol===s.symbol)?' added':''}" id="qab-${esc(s.symbol)}" onclick="quickWatchAdd('${esc(s.symbol)}', this)" title="${watchlistStocks.some(w=>w.symbol===s.symbol)?'Already in watchlist':'Add to watchlist'}">${watchlistStocks.some(w=>w.symbol===s.symbol)?'✓':'+'}</button>
     </td>
     <td class="company-name">${esc(s.name)}<small>${esc(s.sector || '—')}</small></td>
     <td class="price" style="text-align:right">$${fmtPrice(s.price)}</td>
@@ -1173,8 +1813,49 @@ function renderPennyRow(s, idx) {
     ${pctCell(s.pct_5y)}
     <td style="text-align:right;font-size:12px;color:var(--text2)">${fmtBigNum(s.market_cap)}</td>
     <td class="sparkline-cell">${spark}</td>
+    <td class="sparkline-cell" style="min-width:160px">${spark1y}</td>
     <td class="sparkline-cell" style="min-width:160px">${spark5y}</td>
   </tr>`;
+}
+
+function renderWatchRow(s, idx) {
+  const row = renderPennyRow(s, idx);
+  // Inject remove button into the ticker cell
+  return row.replace(
+    `</button>\n    </td>`,
+    `</button>
+      <button class="remove-btn" onclick="watchRemove('${esc(s.symbol)}')" title="Remove from watchlist">✕</button>
+    </td>`
+  );
+}
+
+function renderEtfStockRow(s, idx) {
+  const row = renderPennyRow(s, idx);
+  return row.replace(
+    `</button>\n    </td>`,
+    `</button>
+      <button class="remove-btn" onclick="etfsRemove('${esc(s.symbol)}')" title="Remove from ETF Stocks">✕</button>
+    </td>`
+  );
+}
+
+function renderEtfTabRow(s, idx) {
+  const spark30y   = makeSVGSparkline(s.prices_30y || [], (s.pct_30y  ?? 0) >= 0, 200, 48, s.dates_30y || []);
+
+  function extraPctCell(val) {
+    if (val == null) return `<td style="text-align:right"><span style="color:var(--text2);font-size:11px">—</span></td>`;
+    const cls = val >= 0 ? 'up' : 'down';
+    return `<td style="text-align:right"><span class="change-badge ${cls}">${val >= 0 ? '+' : ''}${val.toFixed(2)}%</span></td>`;
+  }
+
+  const base = renderPennyRow(s, idx);
+  // Insert 10Y % and 30Y % before AUM column, then 30y chart at end
+  return base
+    .replace(
+      `<td style="text-align:right;font-size:12px;color:var(--text2)">${fmtBigNum(s.market_cap)}</td>`,
+      `${extraPctCell(s.year_pct)}${extraPctCell(s.pct_30y)}<td style="text-align:right;font-size:12px;color:var(--text2)">${fmtBigNum(s.market_cap)}</td>`
+    )
+    .replace('</tr>', `<td class="sparkline-cell" style="min-width:200px">${spark30y}</td></tr>`);
 }
 
 // ── SVG Sparkline ─────────────────────────────────────────────────────────
@@ -1405,6 +2086,81 @@ function renderProfile(d) {
   document.getElementById('profile-content').innerHTML = html;
 }
 
+// ── Watchlist UI ───────────────────────────────────────────────────────────
+let _watchLookupTimer = null;
+let _watchPending = null;  // {symbol, name, sector} from lookup
+
+function watchLookupDebounced() {
+  clearTimeout(_watchLookupTimer);
+  const q = document.getElementById('watch-input').value.trim();
+  document.getElementById('watch-lookup-result').innerHTML = '';
+  document.getElementById('watch-add-btn').style.display = 'none';
+  document.getElementById('watch-msg').textContent = '';
+  _watchPending = null;
+  if (!q) return;
+  _watchLookupTimer = setTimeout(() => watchLookup(q), 600);
+}
+
+async function watchLookup(q) {
+  const res  = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+  const data = await res.json();
+  const el   = document.getElementById('watch-lookup-result');
+  if (!data.ok) {
+    el.innerHTML = `<span style="color:var(--red);font-size:12px">${esc(data.error || 'Not found')}</span>`;
+    return;
+  }
+  _watchPending = data;
+  el.innerHTML = `<span class="wl-name">${esc(data.name)}</span>
+    <span class="wl-sector">${esc(data.sector || '')}</span>`;
+  document.getElementById('watch-add-btn').style.display = '';
+}
+
+async function watchAdd() {
+  const sym = (_watchPending?.symbol || document.getElementById('watch-input').value.trim().toUpperCase());
+  if (!sym) return;
+  const msg = document.getElementById('watch-msg');
+  const btn = document.getElementById('watch-add-btn');
+  btn.disabled = true;
+  btn.textContent = 'Adding…';
+  msg.textContent = '';
+  msg.className = '';
+  try {
+    const res  = await fetch('/api/watchlist/add', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({symbol: sym})
+    });
+    const data = await res.json();
+    if (data.ok) {
+      watchlistStocks.push({...data.stock, rank: watchlistStocks.length + 1});
+      document.getElementById('badge-watchlist').textContent = watchlistStocks.length;
+      document.getElementById('watch-input').value = '';
+      document.getElementById('watch-lookup-result').innerHTML = '';
+      btn.style.display = 'none';
+      _watchPending = null;
+      msg.textContent = `${sym} added!`;
+      msg.className = 'ok';
+      switchTab('watchlist');
+    } else {
+      msg.textContent = data.error || 'Failed to add';
+      msg.className = 'err';
+    }
+  } catch {
+    msg.textContent = 'Server error';
+    msg.className = 'err';
+  }
+  btn.disabled = false;
+  btn.textContent = '+ Add to Watchlist';
+}
+
+async function watchRemove(symbol) {
+  await fetch(`/api/watchlist/remove/${encodeURIComponent(symbol)}`, {method: 'DELETE'});
+  watchlistStocks = watchlistStocks.filter(s => s.symbol !== symbol)
+                                    .map((s, i) => ({...s, rank: i + 1}));
+  document.getElementById('badge-watchlist').textContent = watchlistStocks.length;
+  applyFilters();
+}
+
 function renderError() {
   document.getElementById('table-body').innerHTML = `
     <tr><td colspan="12">
@@ -1490,6 +2246,292 @@ function renderError() {
     if (!e.target.closest('svg.sp-chart') && activeEl) hideTooltip();
   });
 })();
+
+// ── Learn Page Search ─────────────────────────────────────────────────────
+function learnSearch(q) {
+  const term = q.trim().toLowerCase();
+  let anyVisible = false;
+  document.querySelectorAll('#learn-page .term-card').forEach(card => {
+    const text = card.textContent.toLowerCase();
+    const show = !term || text.includes(term);
+    card.classList.toggle('hidden', !show);
+    if (show) anyVisible = true;
+  });
+  // Show/hide category headings based on whether any cards are visible
+  document.querySelectorAll('#learn-page .learn-category').forEach(cat => {
+    const hasVisible = [...cat.querySelectorAll('.term-card')].some(c => !c.classList.contains('hidden'));
+    cat.style.display = hasVisible ? '' : 'none';
+  });
+}
+
+// ── ETF Stocks UI ─────────────────────────────────────────────────────────
+let _etfsLookupTimer = null;
+let _etfsPending = null;
+
+function etfsLookupDebounced() {
+  clearTimeout(_etfsLookupTimer);
+  const q = document.getElementById('etfs-input').value.trim();
+  document.getElementById('etfs-lookup-result').innerHTML = '';
+  document.getElementById('etfs-add-btn').style.display = 'none';
+  _etfsPending = null;
+  if (!q) return;
+  _etfsLookupTimer = setTimeout(() => etfsLookup(q), 600);
+}
+
+async function etfsLookup(q) {
+  const res  = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+  const data = await res.json();
+  const el   = document.getElementById('etfs-lookup-result');
+  const btn  = document.getElementById('etfs-add-btn');
+  if (data.symbol) {
+    _etfsPending = data;
+    el.innerHTML = `<span class="wl-name">${data.symbol}</span>
+      <span class="wl-sector">${data.name || ''}</span>`;
+    btn.style.display = '';
+  } else {
+    el.innerHTML = `<span style="color:var(--red)">${data.error || 'Not found'}</span>`;
+    btn.style.display = 'none';
+  }
+}
+
+async function etfsAdd() {
+  const sym = (_etfsPending?.symbol || document.getElementById('etfs-input').value.trim().toUpperCase());
+  if (!sym) return;
+  const msg = document.getElementById('etfs-msg');
+  const btn = document.getElementById('etfs-add-btn');
+  btn.disabled = true; btn.textContent = 'Adding…';
+  msg.textContent = ''; msg.className = '';
+  try {
+    const res  = await fetch('/api/etf-stocks/add', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({symbol: sym})
+    });
+    const data = await res.json();
+    if (data.ok) {
+      etfCustomStocks.push({...data.stock, rank: etfCustomStocks.length + 1});
+      document.getElementById('badge-etfstocks').textContent = etfCustomStocks.length;
+      document.getElementById('etfs-input').value = '';
+      document.getElementById('etfs-lookup-result').innerHTML = '';
+      btn.style.display = 'none';
+      _etfsPending = null;
+      msg.textContent = `${sym} added!`;
+      msg.className = 'ok';
+      applyFilters();
+    } else {
+      msg.textContent = data.error || 'Failed to add';
+      msg.className = 'err';
+    }
+  } catch (err) {
+    msg.textContent = 'Request failed — is the server running?';
+    msg.className = 'err';
+    console.error('etfsAdd error:', err);
+  }
+  btn.disabled = false; btn.textContent = '+ Add to ETF Stocks';
+}
+
+function hyToggle(e) {
+  const pop = document.getElementById('hy-popover');
+  pop.classList.toggle('visible');
+  if (pop.classList.contains('visible')) {
+    // Center on screen
+    pop.style.left   = '50%';
+    pop.style.top    = '50%';
+    pop.style.bottom = 'auto';
+    pop.style.transform = 'translate(-50%, -50%)';
+    // Mark already-added symbols
+    document.querySelectorAll('.hy-add-btn').forEach(b => {
+      const sym = b.getAttribute('onclick').match(/'([^']+)'/)[1];
+      if (etfCustomStocks.some(s => s.symbol === sym)) {
+        b.textContent = '✓'; b.classList.add('added'); b.disabled = true;
+      } else {
+        b.textContent = '+'; b.classList.remove('added'); b.disabled = false;
+      }
+    });
+  }
+}
+
+async function hyAdd(symbol, btn) {
+  if (btn.disabled) return;
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    const res  = await fetch('/api/etf-stocks/add', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({symbol})
+    });
+    const data = await res.json();
+    if (data.ok) {
+      etfCustomStocks.push({...data.stock, rank: etfCustomStocks.length + 1});
+      document.getElementById('badge-etfstocks').textContent = etfCustomStocks.length;
+      btn.textContent = '✓'; btn.classList.add('added');
+      if (currentTab === 'etfstocks') applyFilters();
+    } else {
+      btn.textContent = '!';
+      btn.title = data.error || 'Failed';
+      btn.disabled = false;
+    }
+  } catch {
+    btn.textContent = '!'; btn.disabled = false;
+  }
+}
+
+// Close HY popover on outside click
+document.addEventListener('click', e => {
+  const pop = document.getElementById('hy-popover');
+  const btn = document.getElementById('hy-suggest-btn');
+  if (pop && btn && pop.classList.contains('visible')
+      && !pop.contains(e.target) && !btn.contains(e.target)) {
+    pop.classList.remove('visible');
+  }
+});
+
+async function etfsRemove(symbol) {
+  await fetch(`/api/etf-stocks/remove/${encodeURIComponent(symbol)}`, {method: 'DELETE'});
+  etfCustomStocks = etfCustomStocks.filter(s => s.symbol !== symbol)
+                                   .map((s, i) => ({...s, rank: i + 1}));
+  document.getElementById('badge-etfstocks').textContent = etfCustomStocks.length;
+  applyFilters();
+}
+
+// ── Quick-Add inline button ────────────────────────────────────────────────
+async function quickWatchAdd(symbol, btn) {
+  if (btn.classList.contains('added')) return;
+  const orig = btn.textContent;
+  btn.textContent = '…';
+  btn.disabled = true;
+  try {
+    const res  = await fetch('/api/watchlist/add', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({symbol})
+    });
+    const data = await res.json();
+    if (data.ok) {
+      watchlistStocks.push({...data.stock, rank: watchlistStocks.length + 1});
+      document.getElementById('badge-watchlist').textContent = watchlistStocks.length;
+      btn.textContent = '✓';
+      btn.classList.add('added');
+      btn.title = `${symbol} added to watchlist`;
+      // Don't re-enable — leave as ✓ to show it's already added
+    } else {
+      btn.textContent = orig;
+      btn.disabled = false;
+      btn.title = data.error || 'Failed to add';
+    }
+  } catch {
+    btn.textContent = orig;
+    btn.disabled = false;
+    btn.title = 'Server error';
+  }
+}
+
+// ── FAB Quick-Add ──────────────────────────────────────────────────────────
+let _fabPending = null;
+let _fabLookupTimer = null;
+
+function fabToggle() {
+  const pop = document.getElementById('fab-popover');
+  const isVisible = pop.classList.toggle('visible');
+  if (isVisible) {
+    document.getElementById('fab-ticker-input').focus();
+    document.getElementById('fab-lookup-info').textContent = '';
+    document.getElementById('fab-msg').textContent = '';
+    document.getElementById('fab-msg').className = '';
+    document.getElementById('fab-add-btn').disabled = false;
+    _fabPending = null;
+  }
+}
+
+function fabLookupDebounced() {
+  clearTimeout(_fabLookupTimer);
+  const q = document.getElementById('fab-ticker-input').value.trim();
+  document.getElementById('fab-lookup-info').textContent = '';
+  _fabPending = null;
+  if (!q) return;
+  _fabLookupTimer = setTimeout(() => fabLookup(q), 500);
+}
+
+async function fabLookup(q) {
+  const info = document.getElementById('fab-lookup-info');
+  info.textContent = 'Looking up…';
+  try {
+    const res  = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    if (data.symbol) {
+      _fabPending = data;
+      info.innerHTML = `<span class="wl-name">${data.symbol}</span> — ${data.name || ''}`;
+    } else {
+      info.textContent = data.error || 'Not found';
+      _fabPending = null;
+    }
+  } catch {
+    info.textContent = 'Lookup failed';
+  }
+}
+
+async function fabAdd() {
+  const sym = (_fabPending?.symbol || document.getElementById('fab-ticker-input').value.trim().toUpperCase());
+  if (!sym) return;
+  const msg = document.getElementById('fab-msg');
+  const btn = document.getElementById('fab-add-btn');
+  btn.disabled = true;
+  btn.textContent = 'Adding…';
+  msg.textContent = '';
+  msg.className = '';
+  try {
+    const res  = await fetch('/api/watchlist/add', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({symbol: sym})
+    });
+    const data = await res.json();
+    if (data.ok) {
+      watchlistStocks.push({...data.stock, rank: watchlistStocks.length + 1});
+      document.getElementById('badge-watchlist').textContent = watchlistStocks.length;
+      document.getElementById('fab-ticker-input').value = '';
+      document.getElementById('fab-lookup-info').textContent = '';
+      _fabPending = null;
+      msg.textContent = `${sym} added to watchlist!`;
+      msg.className = 'ok';
+      setTimeout(() => {
+        document.getElementById('fab-popover').classList.remove('visible');
+        switchTab('watchlist');
+      }, 900);
+    } else {
+      msg.textContent = data.error || 'Failed to add';
+      msg.className = 'err';
+      btn.disabled = false;
+      btn.textContent = '+ Add to Watchlist';
+    }
+  } catch {
+    msg.textContent = 'Server error';
+    msg.className = 'err';
+    btn.disabled = false;
+    btn.textContent = '+ Add to Watchlist';
+  }
+}
+
+// Close FAB popover when clicking outside
+document.addEventListener('click', e => {
+  const pop = document.getElementById('fab-popover');
+  const fab = document.getElementById('fab-add');
+  if (pop.classList.contains('visible') && !pop.contains(e.target) && !fab.contains(e.target)) {
+    pop.classList.remove('visible');
+  }
+});
 </script>
+
+<!-- FAB: Quick-Add to Watchlist -->
+<button id="fab-add" onclick="fabToggle()" title="Add stock to watchlist">+</button>
+<div id="fab-popover">
+  <h4>Quick-Add to Watchlist</h4>
+  <input type="text" id="fab-ticker-input" placeholder="Ticker (e.g. AAPL)"
+         oninput="fabLookupDebounced()" onkeydown="if(event.key==='Enter') fabAdd()" />
+  <div id="fab-lookup-info"></div>
+  <button class="btn btn-primary" id="fab-add-btn" onclick="fabAdd()">+ Add to Watchlist</button>
+  <div id="fab-msg"></div>
+</div>
+
 </body>
 </html>

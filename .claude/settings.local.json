@@ -18,7 +18,16 @@
       "Bash(curl -s \"http://localhost:5000/api/penny-stocks\")",
       "Bash(powershell -Command \"$pids = \\(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue\\).OwningProcess | Sort-Object -Unique; if \\($pids\\) { Stop-Process -Id $pids -Force -ErrorAction SilentlyContinue }; Start-Sleep 3; \\(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue\\).Count\")",
       "Bash(powershell -Command \"$pids = \\(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue\\).OwningProcess | Sort-Object -Unique; if \\($pids\\) { Stop-Process -Id $pids -Force -ErrorAction SilentlyContinue }; Start-Sleep 2\")",
-      "Bash(curl -s http://localhost:5000/api/refresh/1m)"
+      "Bash(curl -s http://localhost:5000/api/refresh/1m)",
+      "Bash(curl -s http://localhost:5000/api/watchlist)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''sp500:'''', d[''''sp500''''][''''status'''']\\)\")",
+      "Bash(curl -s http://localhost:5000/api/etf-stocks)",
+      "Bash(python -c \"import server\")",
+      "Bash(curl -s --max-time 3 http://localhost:5000/api/etf-stocks)",
+      "Bash(findstr :5000)",
+      "Bash(powershell -Command \"Stop-Process -Id 23732 -Force; Stop-Process -Id 13640 -Force\")",
+      "Bash(findstr \"LISTEN\")",
+      "Bash(powershell -Command \"Stop-Process -Id 8956 -Force\")"
     ]
   }
 }

@@ -30,6 +30,73 @@ PENNY_CACHE_VERSION = 2           # bump when data schema changes to force re-fe
 TECH_CACHE          = os.path.join(BASE_DIR, 'tech_data_cache.json')
 TECH_CACHE_VERSION  = 1
 
+WATCHLIST_FILE      = os.path.join(BASE_DIR, 'watchlist.json')
+ETF_STOCKS_FILE     = os.path.join(BASE_DIR, 'etf_stocks.json')
+
+ETF_CACHE           = os.path.join(BASE_DIR, 'etf_data_cache.json')
+ETF_CACHE_VERSION   = 2
+
+# ── ETF universe ───────────────────────────────────────────────────────────
+# ~250 major US-listed ETFs across providers and asset classes
+ETF_LIST = list(dict.fromkeys([
+    # ── Vanguard ──
+    'VOO','VTI','VEA','VWO','BND','VXUS','VGT','VHT','VYM','VNQ',
+    'VO','VB','VV','VDE','VFH','VIS','VAW','VPU','VCR','VDC',
+    'VOOG','VOOV','VONE','VTHR','VTWG','VTWO','VYMI','VIGI','VCIT',
+    'VCSH','VGIT','VGSH','VGLT','VMBS','VTIP','BNDX','VNQI',
+    'VT','VXUS','VIGI','VWOB','VIG','VIGI',
+    # ── iShares (BlackRock) ──
+    'IVV','AGG','EFA','EEM','GLD','TLT','LQD','HYG','IWM','IJH',
+    'IJR','IEFA','IEMG','ITOT','IAU','SLV','MBB','GOVT','USIG',
+    'IGSB','IGIB','LQDT','TIP','EMB','SHYG','JNK','FLOT',
+    'IWF','IWD','IWB','IWN','IWO','IWS','IWP','IWR','IWC',
+    'IVW','IVE','IWL','IJT','IJS','IJJ','INTF','QUAL','SIZE','USMV',
+    'MTUM','VLUE','MINV','ACWI','EWJ','EWZ','EWC','EWG','EWU',
+    'EWH','EWS','EWA','EWQ','EWL','EWT','EWY','EWN','EWI','EWP',
+    'SOXX','IGV','ITB','XHB','IBB','IHI','IYW','IYF','IYH','IYE',
+    'IYR','IYZ','IYC','IYJ','IYK','IYM','IYG',
+    # ── SPDR (State Street) ──
+    'SPY','MDY','SDY','GLD','SLV','DIA','XLF','XLK','XLE','XLU',
+    'XLI','XLV','XLP','XLB','XLRE','XLC','XLY','KRE','KBE','KIE',
+    'XOP','XME','XHB','XRT','XBI','XPH','SPDW','SPEM','SPSM',
+    'SPLG','SPYG','SPYV','RSP','GLDM','SPTS','SPTI','SPTL',
+    # ── Invesco ──
+    'QQQ','QQQM','RSP','SPHQ','SPLV','SPMO','PDN','IVOG','IVOV',
+    'IVOO','PGX','PFF','BKLN','PHB','PCEF','PDBC','DBB','DBO',
+    'DBC','DBA','DJP','GSG',
+    # ── Schwab ──
+    'SCHB','SCHD','SCHA','SCHF','SCHX','SCHZ','SCHG','SCHV','SCHE',
+    'SCHH','SCHP','SCHR','SCHI','SCHQ','SCHM','SCHC',
+    # ── ARK Invest ──
+    'ARKK','ARKW','ARKG','ARKF','ARKQ','ARKX','IZRL',
+    # ── ProShares (leveraged/inverse) ──
+    'TQQQ','SQQQ','SSO','SDS','UPRO','SPXS','SPXU','QID','QLD',
+    'TBT','TBF','PSQ','SH','DOG','RWM','TWM','TNA','TZA','UVXY',
+    'VIXY','SVXY',
+    # ── Sector & Thematic ──
+    'BOTZ','ROBO','AIQ','IRBO','WCLD','CLOU','SKYY','IGN',
+    'FINX','ARKF','CIBR','HACK','BUG','ETHO','ICLN','QCLN',
+    'TAN','FAN','CNRG','LIT','REMX','COPX','GDX','GDXJ','SIL',
+    'RING','PICK','MOO','WOOD','XES','OIH','DRIP','GUSH',
+    # ── Fixed Income & Bonds ──
+    'BSV','BIV','BLV','VCLT','VMLUX','FBND','FBNX',
+    'NEAR','SHY','IEI','IEF','TLH','SCHO','SCHR','SCHQ',
+    'SPAB','SPSB','SPIB','SPLB','SPTM','FLRN','USFR',
+    # ── Dividend & Income ──
+    'DVY','HDV','SDY','NOBL','DGRO','DGRW','RDIV','PEY',
+    'FDL','FVD','DTD','DTN','DLN','DTH','VYMI',
+    # ── Real Estate ──
+    'VNQ','IYR','SCHH','USRT','REM','MORT','KBWY',
+    # ── International & EM ──
+    'MCHI','KWEB','INDA','VPL','VGK','VEUR','EZU','FEZ','EWZ',
+    'RSX','TUR','EPI','EIDO','THD','EWM','EPOL','GXG','ARGT',
+    'FM','AFK','NGE','EZA','EGPT',
+    # ── Multi-Asset & Other ──
+    'AOR','AOM','AOA','AOK','GAL','MDIV','YYY','PCEF',
+    # ── Berkshire Hathaway (conglomerate, often grouped with funds) ──
+    'BRK-B','BRK-A',
+]))
+
 # Curated tech watchlist — mega-cap, large-cap, and notable mid-cap tech
 TECH_STOCKS = [
     # Mega-cap / FAANG+
@@ -58,6 +125,9 @@ _EMPTY = dict(data=[], time=None, status='idle',
 _sp500  = dict(**_EMPTY)
 _penny  = dict(**_EMPTY)
 _tech   = dict(**_EMPTY)
+_etf        = dict(**_EMPTY)
+_etf_stocks = dict(**_EMPTY)
+_watch      = dict(**_EMPTY)
 _lock   = threading.Lock()
 
 # ── Penny stock candidate universe ─────────────────────────────────────────
@@ -163,7 +233,12 @@ def download_closes(symbols, period, interval, batch_size=100):
                               progress=False, threads=True)
             for sym in batch:
                 try:
-                    cl = raw['Close'] if len(batch) == 1 else raw[sym]['Close']
+                    if (sym, 'Close') in raw.columns:
+                        cl = raw[(sym, 'Close')]
+                    elif 'Close' in raw.columns:
+                        cl = raw['Close']
+                    else:
+                        cl = raw[sym]['Close']
                     cl = cl.dropna()
                     if len(cl): out[sym] = cl
                 except Exception: pass
@@ -238,6 +313,23 @@ def _10y_fields(cl):
     p5y = round((p10[-1] - p5s) / p5s * 100, 2) if p5s and p10 else None
     return dict(prices_10y=p10, dates_10y=d10, year_pct=yp, pct_5y=p5y)
 
+def _max_fields(cl):
+    """Build max-history (up to 30+ years) monthly fields for ETF charts."""
+    all_p = [round(float(p), 2) for p in cl.tolist()]
+    all_d = [str(d.date()) for d in cl.index]
+    if not all_p:
+        return dict(prices_10y=[], dates_10y=[], year_pct=None, pct_5y=None,
+                    prices_30y=[], dates_30y=[], pct_30y=None)
+    # 10y = last 120 monthly bars
+    p10 = all_p[-120:]; d10 = all_d[-120:]
+    yp  = round((p10[-1] - p10[0]) / p10[0] * 100, 2) if len(p10) >= 2 and p10[0] else None
+    p5s = p10[-60] if len(p10) >= 60 else p10[0]
+    p5y = round((all_p[-1] - p5s) / p5s * 100, 2) if p5s else None
+    # 30y / max = all available monthly bars
+    p30y = round((all_p[-1] - all_p[0]) / all_p[0] * 100, 2) if len(all_p) >= 2 and all_p[0] else None
+    return dict(prices_10y=p10, dates_10y=d10, year_pct=yp, pct_5y=p5y,
+                prices_30y=all_p, dates_30y=all_d, pct_30y=p30y)
+
 def _penny_time_fields(cl):
     """Build multi-period growth fields from 1-year daily close series."""
     prices = [round(float(p), 2) for p in cl.tolist()]
@@ -270,6 +362,8 @@ def _penny_time_fields(cl):
         pct_1y       = round((cur - prices[0]) / prices[0] * 100, 2) if prices[0] else None,
         prices       = prices[-22:],   # last ~1 month for sparkline
         dates        = dates[-22:],
+        prices_1y    = prices,         # full 1-year daily
+        dates_1y     = dates,
     )
 
 # ── S&P 500 smart refresh ──────────────────────────────────────────────────
@@ -559,6 +653,224 @@ def refresh_tech(force_1m=False, force_10y=False):
                      status='ready')
     print(f'[INFO] Tech refresh done — {len(stocks)} stocks.')
 
+# ── ETF refresh ───────────────────────────────────────────────────────────
+
+def refresh_etf(force_1m=False, force_10y=False):
+    global _etf
+    with _lock: _etf['status'] = 'loading'
+
+    disk = _load(ETF_CACHE)
+    if disk and disk.get('version', 1) < ETF_CACHE_VERSION:
+        disk = None
+
+    do_1m  = force_1m  or not disk or _stale_1m(disk)
+    do_10y = force_10y or not disk or _stale_10y(disk)
+
+    syms_yf = [s.replace('.', '-') for s in ETF_LIST]
+    smap    = {}
+    if disk and disk.get('data'):
+        for s in disk['data']:
+            smap[s['symbol'].replace('.', '-')] = dict(s)
+
+    ts_1m  = disk.get('last_1m_update')  if disk else None
+    ts_10y = disk.get('last_10y_update') if disk else None
+
+    if do_1m:
+        print(f'[INFO] ETF: updating 1-year daily data ({len(syms_yf)} ETFs)...')
+        cl1y = download_closes(syms_yf, '1y', '1d')
+        for raw_sym, sym_yf in zip(ETF_LIST, syms_yf):
+            if sym_yf not in cl1y: continue
+            f = _penny_time_fields(cl1y[sym_yf])
+            if not f: continue
+            if sym_yf not in smap:
+                smap[sym_yf] = {'symbol': raw_sym, 'name': raw_sym,
+                                'sector': 'ETF', 'market_cap': None,
+                                'prices_10y': [], 'dates_10y': [],
+                                'prices_30y': [], 'dates_30y': [],
+                                'year_pct': None, 'pct_5y': None, 'pct_30y': None}
+            smap[sym_yf].update(f)
+
+        # Fetch names, categories and AUM
+        print('[INFO] ETF: fetching names/categories...')
+        active_orig = [smap[sy]['symbol'] for sy in smap if smap[sy].get('prices')]
+        for i in range(0, len(active_orig), 50):
+            batch = active_orig[i:i + 50]
+            try:
+                tickers_obj = yf.Tickers(' '.join([s.replace('.', '-') for s in batch]))
+                for sym in batch:
+                    sym_yf = sym.replace('.', '-')
+                    if sym_yf not in smap: continue
+                    try:
+                        info = tickers_obj.tickers[sym_yf].info
+                        fi   = tickers_obj.tickers[sym_yf].fast_info
+                        smap[sym_yf]['name']   = (info.get('shortName') or
+                                                   info.get('longName') or sym)
+                        smap[sym_yf]['sector'] = (info.get('category') or
+                                                   info.get('sector') or 'ETF')
+                        mc = None
+                        try: mc = int(fi.market_cap or 0) or None
+                        except Exception: pass
+                        if mc: smap[sym_yf]['market_cap'] = mc
+                    except Exception:
+                        pass
+            except Exception as e:
+                print(f'[WARN] ETF name batch error: {e}')
+            time.sleep(0.3)
+
+        ts_1m = datetime.now().isoformat()
+        print(f'[INFO] ETF 1-year done ({len(smap)} ETFs).')
+    else:
+        print('[INFO] ETF 1-year fresh — skip.')
+
+    if do_10y:
+        print('[INFO] ETF: updating max-history (30yr) data...')
+        active = [sy for sy, s in smap.items() if s.get('prices')]
+        clmax  = download_closes(active, 'max', '1mo')
+        for sy, s in smap.items():
+            if sy in clmax:
+                s.update(_max_fields(clmax[sy]))
+        ts_10y = datetime.now().isoformat()
+        print('[INFO] ETF max-history done.')
+    else:
+        print('[INFO] ETF max-history fresh — skip.')
+
+    # Preserve original ordering
+    stocks = []
+    for raw_sym in ETF_LIST:
+        sym_yf = raw_sym.replace('.', '-')
+        s = smap.get(sym_yf)
+        if s and s.get('prices'):
+            stocks.append(s)
+
+    payload = dict(version=ETF_CACHE_VERSION,
+                   time=datetime.now().isoformat(),
+                   last_1m_update=ts_1m, last_10y_update=ts_10y, data=stocks)
+    _save(ETF_CACHE, payload)
+
+    with _lock:
+        _etf.update(data=stocks, time=payload['time'],
+                    last_1m_update=ts_1m, last_10y_update=ts_10y,
+                    status='ready')
+    print(f'[INFO] ETF refresh done — {len(stocks)} ETFs.')
+
+# ── Watchlist ──────────────────────────────────────────────────────────────
+
+def _load_watchlist():
+    """Load watchlist symbols from disk. Returns list of symbol strings."""
+    d = _load(WATCHLIST_FILE)
+    if d and isinstance(d.get('symbols'), list):
+        return d['symbols']
+    return []
+
+def _save_watchlist_symbols(symbols):
+    try:
+        with open(WATCHLIST_FILE, 'w') as f:
+            json.dump({'symbols': symbols}, f)
+    except Exception as e:
+        print(f'[WARN] Could not save watchlist: {e}')
+
+def _safe(v):
+    """Convert NaN / Infinity to None so jsonify never crashes."""
+    import math
+    if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+        return None
+    if isinstance(v, dict):
+        return {k: _safe(val) for k, val in v.items()}
+    if isinstance(v, list):
+        return [_safe(i) for i in v]
+    return v
+
+def fetch_watch_stock(symbol):
+    """Fetch full data for a single symbol. Returns stock dict or None."""
+    sym_yf = symbol.replace('.', '-').upper()
+    try:
+        cl1y = download_closes([sym_yf], '1y', '1d')
+        if sym_yf not in cl1y:
+            return None
+        f = _penny_time_fields(cl1y[sym_yf])
+        if not f:
+            return None
+
+        cl10y_map = download_closes([sym_yf], '10y', '1mo')
+        f10y = _10y_fields(cl10y_map[sym_yf]) if sym_yf in cl10y_map else \
+               dict(prices_10y=[], dates_10y=[], year_pct=None, pct_5y=None)
+
+        ticker = yf.Ticker(sym_yf)
+        info   = ticker.info
+        mc     = None
+        try: mc = int(ticker.fast_info.market_cap or 0) or None
+        except Exception: pass
+
+        # ETFs often use 'longName' and have no sector — fall back gracefully
+        name   = (info.get('shortName') or info.get('longName') or symbol.upper())
+        sector = (info.get('category') or info.get('sector') or
+                  info.get('fundFamily') or 'ETF/Fund')
+
+        stock = {
+            'symbol':     symbol.upper(),
+            'name':       str(name),
+            'sector':     str(sector),
+            'market_cap': mc,
+            'added_at':   datetime.now().isoformat(),
+        }
+        stock.update(f)
+        stock.update(f10y)
+        all_cl = cl1y[sym_yf]
+        stock['prices_1y'] = [round(float(p), 2) for p in all_cl.tolist()]
+        stock['dates_1y']  = [str(d.date()) for d in all_cl.index]
+        return _safe(stock)   # strip any NaN/Inf before JSON serialisation
+    except Exception as e:
+        print(f'[WARN] fetch_watch_stock({symbol}): {e}')
+        return None
+
+def refresh_watchlist():
+    """Re-fetch price data for all watchlist symbols."""
+    global _watch
+    symbols = _load_watchlist()
+    with _lock:
+        _watch['status'] = 'loading'
+    stocks = []
+    for sym in symbols:
+        s = fetch_watch_stock(sym)
+        if s:
+            stocks.append(s)
+    with _lock:
+        _watch['data']   = stocks
+        _watch['time']   = datetime.now().isoformat()
+        _watch['status'] = 'ready'
+    print(f'[INFO] Watchlist refreshed — {len(stocks)} stocks.')
+
+# ── ETF Stocks (user-curated persistent list) ─────────────────────────────
+
+def _load_etf_stocks_symbols():
+    d = _load(ETF_STOCKS_FILE)
+    if d and isinstance(d.get('symbols'), list):
+        return d['symbols']
+    return []
+
+def _save_etf_stocks_symbols(symbols):
+    try:
+        with open(ETF_STOCKS_FILE, 'w') as f:
+            json.dump({'symbols': symbols}, f)
+    except Exception as e:
+        print(f'[WARN] Could not save etf_stocks: {e}')
+
+def refresh_etf_stocks():
+    global _etf_stocks
+    symbols = _load_etf_stocks_symbols()
+    with _lock:
+        _etf_stocks['status'] = 'loading'
+    stocks = []
+    for sym in symbols:
+        s = fetch_watch_stock(sym)   # reuse same full-data fetcher
+        if s:
+            stocks.append(s)
+    with _lock:
+        _etf_stocks['data']   = stocks
+        _etf_stocks['time']   = datetime.now().isoformat()
+        _etf_stocks['status'] = 'ready'
+    print(f'[INFO] ETF Stocks refreshed — {len(stocks)} items.')
+
 # ── Flask routes ───────────────────────────────────────────────────────────
 
 @app.route('/')
@@ -592,6 +904,127 @@ def get_tech():
                             last_10y_update=_tech['last_10y_update'],
                             data=_tech['data']))
 
+@app.route('/api/etfs')
+def get_etfs():
+    with _lock:
+        return jsonify(dict(status=_etf['status'], count=len(_etf['data']),
+                            cached_at=_etf['time'],
+                            last_1m_update=_etf['last_1m_update'],
+                            last_10y_update=_etf['last_10y_update'],
+                            data=_etf['data']))
+
+@app.route('/api/watchlist')
+def get_watchlist():
+    with _lock:
+        return jsonify(dict(status=_watch['status'], count=len(_watch['data']),
+                            data=_watch['data']))
+
+@app.route('/api/watchlist/add', methods=['POST'])
+def watchlist_add():
+    try:
+        from flask import request as freq
+        symbol = (freq.json or {}).get('symbol', '').strip().upper()
+        if not symbol:
+            return jsonify({'ok': False, 'error': 'No symbol provided'}), 400
+        symbols = _load_watchlist()
+        if symbol in symbols:
+            return jsonify({'ok': False, 'error': f'{symbol} already in watchlist'})
+        s = fetch_watch_stock(symbol)
+        if not s:
+            return jsonify({'ok': False, 'error': f'Could not find data for {symbol}'}), 404
+        symbols.append(symbol)
+        _save_watchlist_symbols(symbols)
+        with _lock:
+            _watch['data'].append(s)
+            _watch['status'] = 'ready'
+        return jsonify({'ok': True, 'stock': s})
+    except Exception as e:
+        print(f'[ERROR] watchlist_add: {e}')
+        return jsonify({'ok': False, 'error': str(e)}), 500
+
+@app.route('/api/watchlist/remove/<symbol>', methods=['DELETE'])
+def watchlist_remove(symbol):
+    symbol = symbol.upper()
+    symbols = _load_watchlist()
+    if symbol not in symbols:
+        return jsonify({'ok': False, 'error': f'{symbol} not in watchlist'}), 404
+    symbols.remove(symbol)
+    _save_watchlist_symbols(symbols)
+    with _lock:
+        _watch['data'] = [s for s in _watch['data'] if s['symbol'] != symbol]
+    return jsonify({'ok': True})
+
+@app.route('/api/watchlist/refresh')
+def watchlist_refresh():
+    threading.Thread(target=refresh_watchlist, daemon=True).start()
+    return jsonify({'status': 'started'})
+
+# ── ETF Stocks routes ──────────────────────────────────────────────────────
+
+@app.route('/api/etf-stocks')
+def get_etf_stocks():
+    with _lock:
+        return jsonify(dict(status=_etf_stocks['status'],
+                            count=len(_etf_stocks['data']),
+                            data=_etf_stocks['data']))
+
+@app.route('/api/etf-stocks/add', methods=['POST'])
+def etf_stocks_add():
+    try:
+        from flask import request as freq
+        symbol = (freq.json or {}).get('symbol', '').strip().upper()
+        if not symbol:
+            return jsonify({'ok': False, 'error': 'No symbol provided'}), 400
+        symbols = _load_etf_stocks_symbols()
+        if symbol in symbols:
+            return jsonify({'ok': False, 'error': f'{symbol} already in ETF Stocks'})
+        s = fetch_watch_stock(symbol)
+        if not s:
+            return jsonify({'ok': False, 'error': f'Could not find data for {symbol}'}), 404
+        symbols.append(symbol)
+        _save_etf_stocks_symbols(symbols)
+        with _lock:
+            _etf_stocks['data'].append(s)
+            _etf_stocks['status'] = 'ready'
+        return jsonify({'ok': True, 'stock': s})
+    except Exception as e:
+        print(f'[ERROR] etf_stocks_add: {e}')
+        return jsonify({'ok': False, 'error': str(e)}), 500
+
+@app.route('/api/etf-stocks/remove/<symbol>', methods=['DELETE'])
+def etf_stocks_remove(symbol):
+    symbol = symbol.upper()
+    symbols = _load_etf_stocks_symbols()
+    if symbol not in symbols:
+        return jsonify({'ok': False, 'error': f'{symbol} not in ETF Stocks'}), 404
+    symbols.remove(symbol)
+    _save_etf_stocks_symbols(symbols)
+    with _lock:
+        _etf_stocks['data'] = [s for s in _etf_stocks['data'] if s['symbol'] != symbol]
+    return jsonify({'ok': True})
+
+@app.route('/api/etf-stocks/refresh')
+def etf_stocks_refresh():
+    threading.Thread(target=refresh_etf_stocks, daemon=True).start()
+    return jsonify({'status': 'started'})
+
+@app.route('/api/search')
+def search_symbol():
+    """Quick symbol lookup — returns name/sector if valid."""
+    from flask import request as freq
+    q = freq.args.get('q', '').strip().upper()
+    if not q:
+        return jsonify({'ok': False})
+    try:
+        info = yf.Ticker(q.replace('.', '-')).info
+        name = info.get('shortName') or info.get('longName')
+        if not name:
+            return jsonify({'ok': False, 'error': 'Symbol not found'})
+        return jsonify({'ok': True, 'symbol': q,
+                        'name': name, 'sector': info.get('sector', '')})
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)})
+
 @app.route('/api/refresh')
 def api_refresh():
     with _lock:
@@ -599,6 +1032,7 @@ def api_refresh():
     threading.Thread(target=refresh_sp500, kwargs=dict(force_1m=True, force_10y=True), daemon=True).start()
     threading.Thread(target=refresh_penny, kwargs=dict(force_1m=True, force_10y=True), daemon=True).start()
     threading.Thread(target=refresh_tech,  kwargs=dict(force_1m=True, force_10y=True), daemon=True).start()
+    threading.Thread(target=refresh_etf,   kwargs=dict(force_1m=True, force_10y=True), daemon=True).start()
     return jsonify({'status':'started'})
 
 @app.route('/api/refresh/1m')
@@ -606,6 +1040,7 @@ def api_refresh_1m():
     threading.Thread(target=refresh_sp500, kwargs=dict(force_1m=True), daemon=True).start()
     threading.Thread(target=refresh_penny, kwargs=dict(force_1m=True), daemon=True).start()
     threading.Thread(target=refresh_tech,  kwargs=dict(force_1m=True), daemon=True).start()
+    threading.Thread(target=refresh_etf,   kwargs=dict(force_1m=True), daemon=True).start()
     return jsonify({'status':'started'})
 
 @app.route('/api/refresh/10y')
@@ -613,6 +1048,7 @@ def api_refresh_10y():
     threading.Thread(target=refresh_sp500, kwargs=dict(force_10y=True), daemon=True).start()
     threading.Thread(target=refresh_penny, kwargs=dict(force_10y=True), daemon=True).start()
     threading.Thread(target=refresh_tech,  kwargs=dict(force_10y=True), daemon=True).start()
+    threading.Thread(target=refresh_etf,   kwargs=dict(force_10y=True), daemon=True).start()
     return jsonify({'status':'started'})
 
 @app.route('/api/status')
@@ -625,6 +1061,8 @@ def api_status():
                            last_1m=_penny['last_1m_update'], last_10y=_penny['last_10y_update']),
             'tech':   dict(status=_tech['status'],  count=len(_tech['data']),
                            last_1m=_tech['last_1m_update'],  last_10y=_tech['last_10y_update']),
+            'etf':    dict(status=_etf['status'],   count=len(_etf['data']),
+                           last_1m=_etf['last_1m_update'],   last_10y=_etf['last_10y_update']),
         })
 
 @app.route('/api/profile/<symbol>')
@@ -672,6 +1110,29 @@ if __name__ == '__main__':
     _boot(CACHE_FILE,  _sp500, refresh_sp500, 'S&P 500')
     _boot(PENNY_CACHE, _penny, refresh_penny, 'Penny', required_version=PENNY_CACHE_VERSION)
     _boot(TECH_CACHE,  _tech,  refresh_tech,  'Tech',  required_version=TECH_CACHE_VERSION)
+    _boot(ETF_CACHE,   _etf,   refresh_etf,   'ETF',   required_version=ETF_CACHE_VERSION)
+
+    # Boot watchlist
+    wl_syms = _load_watchlist()
+    if wl_syms:
+        print(f'[INFO] Watchlist: {len(wl_syms)} saved symbols, refreshing...')
+        threading.Thread(target=refresh_watchlist, daemon=True).start()
+    else:
+        with _lock:
+            _watch['data'] = []
+            _watch['status'] = 'ready'
+        print('[INFO] Watchlist: empty.')
+
+    # Boot ETF Stocks
+    etf_s_syms = _load_etf_stocks_symbols()
+    if etf_s_syms:
+        print(f'[INFO] ETF Stocks: {len(etf_s_syms)} saved symbols, refreshing...')
+        threading.Thread(target=refresh_etf_stocks, daemon=True).start()
+    else:
+        with _lock:
+            _etf_stocks['data'] = []
+            _etf_stocks['status'] = 'ready'
+        print('[INFO] ETF Stocks: empty.')
 
     print('\n========================================')
     print('  StockPerformer  ->  http://localhost:5000')
