@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StockPerformer — S&P 500 Dashboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --green-bg: rgba(63,185,80,0.12);
+    --red: #f85149;
+    --red-bg: rgba(248,81,73,0.12);
+    --yellow: #d29922;
+    --radius: 8px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .logo svg { color: var(--accent); }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #status-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  #status-badge.ready { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+  #status-badge.loading { background: rgba(210,153,34,0.12); color: var(--yellow); border-color: var(--yellow); }
+  #status-badge.error { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-primary { background: var(--accent); color: #0d1117; }
+  .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+
+  /* ── Tab Bar ── */
+  .tab-bar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    gap: 2px;
+    position: sticky;
+    top: 60px;
+    z-index: 99;
+  }
+  .tab {
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--text2);
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .tab.active .tab-badge { background: rgba(88,166,255,.15); color: var(--accent); border-color: rgba(88,166,255,.4); }
+
+  /* ── Summary Bar ── */
+  .summary-bar {
+    padding: 16px 24px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .stat-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    min-width: 150px;
+    flex: 1;
+  }
+  .stat-card .label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; }
+  .stat-card .value { font-size: 22px; font-weight: 700; }
+  .stat-card .sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* ── Controls ── */
+  .controls {
+    padding: 14px 24px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 340px;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text2);
+    pointer-events: none;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 8px 10px 8px 34px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap input::placeholder { color: var(--text2); }
+
+  select {
+    padding: 8px 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+  }
+  select:focus { border-color: var(--accent); }
+
+  .controls-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  #results-count { font-size: 12px; color: var(--text2); }
+
+  /* ── Table ── */
+  .table-outer {
+    padding: 0 24px 24px;
+  }
+  .table-wrap {
+    overflow: auto;
+    max-height: calc(100vh - var(--thead-top, 104px) - 44px - 60px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+  }
+  thead th {
+    padding: 11px 12px;
+    height: 44px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--green);
+    border-bottom: 2px solid var(--green);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    background: var(--bg2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    vertical-align: middle;
+  }
+  thead th:hover { color: #6ee87a; }
+  thead th .sort-icon { margin-left: 4px; opacity: .4; }
+  thead th.sorted .sort-icon { opacity: 1; color: var(--accent); }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .1s;
+  }
+  tbody tr:hover { background: var(--bg2); }
+
+  td {
+    padding: 11px 12px;
+    height: 44px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .rank { color: var(--text2); font-size: 12px; width: 44px; }
+  .ticker {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 13px;
+    min-width: 70px;
+  }
+  .company-name { max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+  .company-name small { display: block; color: var(--text2); font-size: 11px; margin-top: 1px; }
+
+  .sector-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .price { font-weight: 600; font-size: 14px; }
+
+  .change {
+    font-weight: 600;
+    font-size: 13px;
+    min-width: 80px;
+  }
+  .change.up { color: var(--green); }
+  .change.down { color: var(--red); }
+  .change.flat { color: var(--text2); }
+
+  .change-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .change-badge.up { background: var(--green-bg); color: var(--green); }
+  .change-badge.down { background: var(--red-bg); color: var(--red); }
+  .change-badge.flat { background: var(--bg3); color: var(--text2); }
+
+  .sparkline-cell { width: 120px; min-width: 120px; }
+  .sparkline-cell svg { display: block; }
+
+  /* ── Pagination ── */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 20px 24px;
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--text2);
+    transition: all .15s;
+  }
+  .page-btn:hover { color: var(--text); border-color: var(--text2); }
+  .page-btn.active { background: var(--accent); color: #0d1117; border-color: var(--accent); font-weight: 700; }
+  .page-btn:disabled { opacity: .3; cursor: default; }
+
+  /* ── Loading overlay ── */
+  #loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(13,17,23,.85);
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  #loading-overlay.visible { display: flex; }
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: var(--text2); font-size: 14px; }
+  .loading-sub { color: var(--text2); font-size: 12px; opacity: .7; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+  }
+  .empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text); }
+  .empty-state p { font-size: 14px; }
+
+  /* ── Skeleton rows ── */
+  .skeleton { animation: pulse 1.5s ease-in-out infinite; }
+  .skeleton-cell {
+    height: 14px;
+    background: var(--bg3);
+    border-radius: 4px;
+    display: inline-block;
+  }
+  @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.8} }
+
+  /* ── Cache note ── */
+  #cache-note {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text2);
+    padding: 0 24px 4px;
+  }
+
+  /* ── Info Button ── */
+  .info-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text2);
+    transition: color .15s, border-color .15s, background .15s;
+    padding: 0;
+  }
+  .info-btn:hover { color: var(--accent); border-color: var(--accent); background: rgba(88,166,255,.08); }
+
+  /* ── Profile Modal ── */
+  #profile-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.6);
+    z-index: 500;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  #profile-overlay.visible { display: flex; }
+  #profile-modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 100%; max-width: 620px;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0,0,0,.6);
+    position: relative;
+  }
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  }
+  .modal-title { display: flex; align-items: center; gap: 12px; }
+  .modal-symbol { font-size: 22px; font-weight: 800; color: var(--accent); }
+  .modal-name { font-size: 14px; color: var(--text2); margin-top: 2px; }
+  .modal-close {
+    background: none; border: none; cursor: pointer;
+    color: var(--text2); padding: 4px; border-radius: 6px;
+    transition: color .15s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 20px 24px; }
+  .modal-price-row {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 20px; align-items: baseline;
+  }
+  .modal-price { font-size: 32px; font-weight: 800; }
+  .modal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .modal-stat {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .modal-stat .ms-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .modal-stat .ms-value { font-size: 15px; font-weight: 700; }
+  .modal-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 16px;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+  .modal-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .modal-tag {
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    background: rgba(88,166,255,.12); color: var(--accent);
+    border: 1px solid rgba(88,166,255,.3);
+  }
+  .modal-spinner {
+    text-align: center; padding: 40px;
+    color: var(--text2); font-size: 13px;
+  }
+
+  /* ── Penny Controls ── */
+  #penny-controls {
+    padding: 10px 24px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: none;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+  }
+  #penny-controls.visible { display: flex; }
+  .pctrl-label {
+    font-size: 11px; color: var(--text2);
+    text-transform: uppercase; letter-spacing: .6px;
+    margin-right: 4px; white-space: nowrap;
+  }
+  .pctrl-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .ptier-btn, .pperiod-btn {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text2);
+    transition: all .15s;
+  }
+  .ptier-btn:hover, .pperiod-btn:hover { color: var(--text); border-color: var(--text2); }
+  .ptier-btn.active  { background: rgba(88,166,255,.15); color: var(--accent); border-color: var(--accent); }
+  .pperiod-btn.active { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+  .penny-threshold-badge {
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+    background: var(--green-bg); color: var(--green); border: 1px solid var(--green);
+    white-space: nowrap;
+  }
+  td.growth-hit  { background: rgba(63,185,80,.08); }
+  td.growth-near { background: rgba(210,153,34,.06); }
+
+  /* ── Sparkline Tooltip ── */
+  #spark-tooltip {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.5);
+    white-space: nowrap;
+    display: none;
+  }
+  #spark-tooltip .tt-date { color: var(--text2); font-size: 11px; margin-bottom: 2px; }
+  #spark-tooltip .tt-price { font-weight: 700; font-size: 14px; }
+  .spark-hover-line {
+    pointer-events: none;
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(255,255,255,.25);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    header { padding: 0 12px; }
+    .summary-bar, .controls, .table-wrap, .pagination { padding-left: 12px; padding-right: 12px; }
+    .stat-card { min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Fetching S&amp;P 500 data…</div>
+  <div class="loading-sub">First load downloads ~1 month of price history. This takes about 2 minutes.</div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+      <polyline points="16 7 22 7 22 13"></polyline>
+    </svg>
+    StockPerformer
+  </div>
+  <div class="header-right">
+    <span id="status-badge">—</span>
+    <button class="btn btn-secondary" onclick="refreshData()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Refresh
+    </button>
+  </div>
+</header>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab active" id="tab-sp500"   onclick="switchTab('sp500')">
+    S&amp;P 500 <span class="tab-badge" id="badge-sp500">—</span>
+  </button>
+  <button class="tab" id="tab-penny"          onclick="switchTab('penny')">
+    Penny Stocks <span class="tab-badge" id="badge-penny">—</span>
+  </button>
+  <button class="tab" id="tab-tech"           onclick="switchTab('tech')">
+    Tech Stocks <span class="tab-badge" id="badge-tech">—</span>
+  </button>
+  <button class="tab" id="tab-marketcap"      onclick="switchTab('marketcap')">
+    Top 500 by Market Cap <span class="tab-badge" id="badge-marketcap">—</span>
+  </button>
+</div>
+
+<!-- Summary Bar -->
+<div class="summary-bar">
+  <div class="stat-card">
+    <div class="label">Total Stocks</div>
+    <div class="value" id="sum-total">—</div>
+    <div class="sub" id="sum-total-sub">filtered results</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Gainers (Day)</div>
+    <div class="value" id="sum-gainers" style="color:var(--green)">—</div>
+    <div class="sub">Positive daily change</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Losers (Day)</div>
+    <div class="value" id="sum-losers" style="color:var(--red)">—</div>
+    <div class="sub">Negative daily change</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Avg 1-Month Return</div>
+    <div class="value" id="sum-avg-month">—</div>
+    <div class="sub">Across all S&amp;P 500</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Best 1-Month</div>
+    <div class="value" id="sum-best" style="color:var(--green)">—</div>
+    <div class="sub" id="sum-best-name">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Worst 1-Month</div>
+    <div class="value" id="sum-worst" style="color:var(--red)">—</div>
+    <div class="sub" id="sum-worst-name">—</div>
+  </div>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="search" placeholder="Search ticker or company…" oninput="applyFilters()" />
+  </div>
+  <select id="sector-filter" onchange="applyFilters()">
+    <option value="">All Sectors</option>
+  </select>
+  <select id="price-filter" onchange="applyFilters()">
+    <option value="">All Prices</option>
+    <option value="5">Under $5</option>
+    <option value="10">Under $10</option>
+    <option value="15">Under $15</option>
+    <option value="20">Under $20</option>
+    <option value="50">Under $50</option>
+    <option value="75">Under $75</option>
+    <option value="100">Under $100</option>
+    <option value="150">Under $150</option>
+    <option value="200">Under $200</option>
+    <option value="300">Under $300</option>
+    <option value="500">Under $500</option>
+    <option value="1000">Under $1,000</option>
+    <option value="1000+">$1,000+</option>
+  </select>
+  <select id="sort-col" onchange="applyFilters()">
+    <option value="rank">Sort: Rank</option>
+    <option value="symbol">Sort: Ticker A→Z</option>
+    <option value="price">Sort: Price ↓</option>
+    <option value="day_pct">Sort: Day % ↓</option>
+    <option value="month_pct">Sort: Month % ↓</option>
+    <option value="year_pct">Sort: 10-Yr % ↓</option>
+    <option value="market_cap">Sort: Mkt Cap ↓</option>
+    <option value="name">Sort: Name A→Z</option>
+  </select>
+  <select id="sort-dir" onchange="applyFilters()">
+    <option value="desc">Descending</option>
+    <option value="asc">Ascending</option>
+  </select>
+  <div class="controls-right">
+    <span id="results-count"></span>
+  </div>
+</div>
+
+<div id="cache-note"></div>
+
+<!-- Penny Controls (visible only on penny tab) -->
+<div id="penny-controls">
+  <div class="pctrl-group">
+    <span class="pctrl-label">Price:</span>
+    <button class="ptier-btn active" id="ptier-5"  onclick="setPennyTier('5')">Under $5</button>
+    <button class="ptier-btn"        id="ptier-25" onclick="setPennyTier('25')">Under $25</button>
+  </div>
+  <div class="pctrl-group">
+    <span class="pctrl-label">Period:</span>
+    <button class="pperiod-btn"        id="pp-5d"  onclick="setPennyPeriod('5d')">5 Days</button>
+    <button class="pperiod-btn"        id="pp-15d" onclick="setPennyPeriod('15d')">15 Days</button>
+    <button class="pperiod-btn"        id="pp-45d" onclick="setPennyPeriod('45d')">45 Days</button>
+    <button class="pperiod-btn"        id="pp-3mo" onclick="setPennyPeriod('3mo')">3 Months</button>
+    <button class="pperiod-btn"        id="pp-1y"  onclick="setPennyPeriod('1y')">1 Year</button>
+    <button class="pperiod-btn"        id="pp-5y"  onclick="setPennyPeriod('5y')">5 Years</button>
+    <button class="pperiod-btn active" id="pp-all" onclick="setPennyPeriod('all')">All</button>
+  </div>
+  <span class="penny-threshold-badge">≥ 30% Growth Filter</span>
+</div>
+
+<!-- Table -->
+<div class="table-outer">
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="rank">#</th>
+        <th onclick="sortBy('symbol')">Ticker <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('name')">Company <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('sector')">Sector <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('price')" style="text-align:right">Price <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('day_change')" style="text-align:right">Day Chg <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('day_pct')" style="text-align:right">Day % <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('month_pct')" style="text-align:right">1-Mo % <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('year_pct')" style="text-align:right">10-Yr % <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('market_cap')" style="text-align:right" id="th-mktcap">Mkt Cap <span class="sort-icon">↕</span></th>
+        <th>1-Month Chart</th>
+        <th>10-Year Chart</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+      <tr><td colspan="11"><div class="empty-state"><p>Loading data…</p></div></td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- Pagination -->
+<div class="pagination" id="pagination"></div>
+
+<!-- Sparkline Tooltip -->
+<div id="spark-tooltip">
+  <div class="tt-date" id="tt-date"></div>
+  <div class="tt-price" id="tt-price"></div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profile-overlay" onclick="closeProfile(event)">
+  <div id="profile-modal">
+    <div id="profile-content">
+      <div class="modal-spinner">Loading profile…</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let allStocks    = [];
+let pennyStocks  = [];
+let techStocks   = [];
+let filtered     = [];
+let currentPage  = 1;
+let currentTab   = 'sp500';       // 'sp500' | 'penny' | 'marketcap'
+const PAGE_SIZE  = 50;
+let pollInterval = null;
+let pennyPriceTier = '5';         // '5' | '25'
+let pennyPeriod    = 'all';       // 'all' | '5d' | '15d' | '45d' | '3mo' | '1y' | '5y'
+const PENNY_MIN_GROWTH = 30;      // % threshold for period filter
+
+// ── Bootstrap ──────────────────────────────────────────────────────────────
+function updateStickyTop() {
+  const h = (document.querySelector('header')?.offsetHeight || 60)
+          + (document.querySelector('.tab-bar')?.offsetHeight || 44);
+  document.documentElement.style.setProperty('--thead-top', h + 'px');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  updateStickyTop();
+  window.addEventListener('resize', updateStickyTop);
+  fetchData();
+  fetchPennyData();
+  fetchTechData();
+});
+
+// ── Tab switching ──────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+
+  // Show/hide penny controls (also hide on tech tab)
+  document.getElementById('penny-controls').classList.toggle('visible', tab === 'penny');
+
+  // Update table header and sort options
+  updateTableHeader();
+
+  // Reset sort to sensible defaults per tab
+  const sortSel = document.getElementById('sort-col');
+  const dirSel  = document.getElementById('sort-dir');
+  if (tab === 'marketcap') {
+    sortSel.value = 'market_cap'; dirSel.value = 'desc';
+  } else if (tab === 'penny') {
+    sortSel.value = 'month_pct';  dirSel.value = 'desc';
+  } else if (tab === 'tech') {
+    sortSel.value = 'month_pct';  dirSel.value = 'desc';
+  } else {
+    sortSel.value = 'rank';       dirSel.value = 'asc';
+  }
+
+  applyFilters();
+}
+
+async function fetchData() {
+  try {
+    const res = await fetch('/api/stocks');
+    const json = await res.json();
+
+    if (json.status === 'loading' || json.status === 'idle') {
+      showOverlay(true);
+      if (!pollInterval) {
+        pollInterval = setInterval(fetchData, 5000);
+      }
+      return;
+    }
+
+    if (json.status === 'error') {
+      setBadge('error', 'Error');
+      showOverlay(false);
+      renderError();
+      return;
+    }
+
+    // Ready
+    clearInterval(pollInterval);
+    pollInterval = null;
+    showOverlay(false);
+
+    allStocks = json.data.map((s, i) => ({ ...s, rank: i + 1 }));
+    document.getElementById('badge-sp500').textContent    = allStocks.length;
+    document.getElementById('badge-marketcap').textContent = allStocks.length;
+    populateSectorFilter();
+    setBadge('ready', `${allStocks.length} stocks`);
+
+    // Show per-layer cache timestamps
+    const parts = [];
+    if (json.last_1m_update) {
+      const d = new Date(json.last_1m_update);
+      parts.push(`1-mo updated: ${d.toLocaleDateString()} ${d.toLocaleTimeString()}`);
+    }
+    if (json.last_10y_update) {
+      const d = new Date(json.last_10y_update);
+      parts.push(`10-yr updated: ${d.toLocaleDateString()} ${d.toLocaleTimeString()}`);
+    }
+    if (parts.length) {
+      document.getElementById('cache-note').textContent = parts.join('  ·  ');
+    }
+
+    applyFilters();
+
+  } catch (e) {
+    setBadge('error', 'Server offline');
+    showOverlay(false);
+    renderError();
+  }
+}
+
+async function fetchPennyData() {
+  try {
+    const res  = await fetch('/api/penny-stocks');
+    const json = await res.json();
+    if (json.status === 'loading' || json.status === 'idle') {
+      setTimeout(fetchPennyData, 5000);
+      return;
+    }
+    if (json.status === 'ready' && json.data.length) {
+      pennyStocks = json.data.map((s, i) => ({ ...s, rank: i + 1 }));
+      document.getElementById('badge-penny').textContent = pennyStocks.length;
+      if (currentTab === 'penny') applyFilters();
+    }
+  } catch { /* server may still be starting */ }
+}
+
+async function fetchTechData() {
+  try {
+    const res  = await fetch('/api/tech-stocks');
+    const json = await res.json();
+    if (json.status === 'loading' || json.status === 'idle') {
+      setTimeout(fetchTechData, 5000);
+      return;
+    }
+    if (json.status === 'ready' && json.data.length) {
+      techStocks = json.data.map((s, i) => ({ ...s, rank: i + 1 }));
+      document.getElementById('badge-tech').textContent = techStocks.length;
+      if (currentTab === 'tech') applyFilters();
+    }
+  } catch { /* server may still be starting */ }
+}
+
+async function refreshData() {
+  setBadge('loading', 'Refreshing…');
+  showOverlay(true);
+  try {
+    await fetch('/api/refresh');
+    setTimeout(fetchData, 2000);
+    if (!pollInterval) pollInterval = setInterval(fetchData, 5000);
+  } catch {
+    setBadge('error', 'Error');
+    showOverlay(false);
+  }
+}
+
+// ── Summary Stats ──────────────────────────────────────────────────────────
+function updateSummary(stocks) {
+  if (!stocks || !stocks.length) return;
+  const gainers  = stocks.filter(s => s.day_pct > 0).length;
+  const losers   = stocks.filter(s => s.day_pct < 0).length;
+  const avgMonth = stocks.reduce((a, s) => a + (s.month_pct || 0), 0) / stocks.length;
+  const best     = stocks.reduce((a, b) => (b.month_pct || 0) > (a.month_pct || 0) ? b : a, stocks[0]);
+  const worst    = stocks.reduce((a, b) => (b.month_pct || 0) < (a.month_pct || 0) ? b : a, stocks[0]);
+
+  const tabLabel = { sp500: 'S&P 500', penny: 'Penny Stocks', tech: 'Tech Stocks', marketcap: 'Top by Mkt Cap' };
+  setText('sum-total',     stocks.length);
+  document.getElementById('sum-total-sub').textContent = tabLabel[currentTab] || 'filtered results';
+  setText('sum-gainers',   gainers);
+  setText('sum-losers',    losers);
+  setText('sum-avg-month', fmtPct(avgMonth));
+  setText('sum-best',      fmtPct(best.month_pct || 0));
+  setText('sum-best-name', best.symbol);
+  setText('sum-worst',     fmtPct(worst.month_pct || 0));
+  setText('sum-worst-name', worst.symbol);
+}
+
+// ── Sector Filter ──────────────────────────────────────────────────────────
+function populateSectorFilter() {
+  const sectors = [...new Set(allStocks.map(s => s.sector))].sort();
+  const sel = document.getElementById('sector-filter');
+  sectors.forEach(sec => {
+    const opt = document.createElement('option');
+    opt.value = sec;
+    opt.textContent = sec;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Filter + Sort + Paginate ───────────────────────────────────────────────
+function applyFilters() {
+  const q      = document.getElementById('search').value.trim().toLowerCase();
+  const sector = document.getElementById('sector-filter').value;
+  const price  = document.getElementById('price-filter').value;
+  const col    = document.getElementById('sort-col').value;
+  const dir    = document.getElementById('sort-dir').value;
+
+  const PERIOD_FIELD = { '5d':'pct_5d','15d':'pct_15d','45d':'pct_45d',
+                          '3mo':'pct_3mo','1y':'pct_1y','5y':'pct_5y' };
+
+  if (currentTab === 'tech') {
+    filtered = techStocks.filter(s => {
+      if (q) return s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q);
+      return true;
+    });
+    document.getElementById('results-count').textContent =
+      `Showing ${filtered.length} of ${techStocks.length} stocks`;
+  } else if (currentTab === 'penny') {
+    const maxPrice = parseFloat(pennyPriceTier);
+    filtered = pennyStocks.filter(s => {
+      if (s.price >= maxPrice) return false;
+      if (pennyPeriod !== 'all') {
+        const val = s[PERIOD_FIELD[pennyPeriod]];
+        if (val == null || val < PENNY_MIN_GROWTH) return false;
+      }
+      if (q) return s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q);
+      return true;
+    });
+    const totalTier = pennyStocks.filter(s => s.price < maxPrice).length;
+    const periodLabel = pennyPeriod === 'all' ? 'all periods' : `≥30% in ${pennyPeriod}`;
+    document.getElementById('results-count').textContent =
+      `Showing ${filtered.length} of ${totalTier} stocks (${periodLabel})`;
+  } else {
+    const source = allStocks;
+    filtered = source.filter(s => {
+      if (sector && s.sector !== sector) return false;
+      if (price === '1000+') {
+        if (s.price < 1000) return false;
+      } else if (price) {
+        if (s.price >= parseFloat(price)) return false;
+      }
+      if (q) return s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q);
+      return true;
+    });
+    document.getElementById('results-count').textContent =
+      `Showing ${filtered.length} of ${allStocks.length} stocks`;
+  }
+
+  // Sort — treat null as -Infinity so nulls sort last
+  filtered.sort((a, b) => {
+    let av = a[col] ?? -Infinity, bv = b[col] ?? -Infinity;
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    if (av < bv) return dir === 'asc' ? -1 : 1;
+    if (av > bv) return dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  currentPage = 1;
+  updateSummary(filtered);
+  renderPage();
+  renderPagination();
+}
+
+function sortBy(col) {
+  const sortSel = document.getElementById('sort-col');
+  const dirSel  = document.getElementById('sort-dir');
+  if (sortSel.value === col) {
+    dirSel.value = dirSel.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortSel.value = col;
+    dirSel.value = 'desc';
+  }
+  applyFilters();
+}
+
+// ── Penny Controls ─────────────────────────────────────────────────────────
+function setPennyTier(tier) {
+  pennyPriceTier = tier;
+  document.querySelectorAll('.ptier-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('ptier-' + tier).classList.add('active');
+  applyFilters();
+}
+
+function setPennyPeriod(period) {
+  pennyPeriod = period;
+  document.querySelectorAll('.pperiod-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pp-' + period).classList.add('active');
+  // Auto-sort by the selected period
+  const sortSel = document.getElementById('sort-col');
+  const FIELD = { '5d':'pct_5d','15d':'pct_15d','45d':'pct_45d',
+                  '3mo':'pct_3mo','1y':'pct_1y','5y':'pct_5y','all':'month_pct' };
+  const opt = sortSel.querySelector(`option[value="${FIELD[period]}"]`);
+  if (opt) sortSel.value = FIELD[period];
+  document.getElementById('sort-dir').value = 'desc';
+  applyFilters();
+}
+
+// ── Dynamic table header ────────────────────────────────────────────────────
+function updateTableHeader() {
+  const thead = document.querySelector('table thead tr');
+  const sortSel = document.getElementById('sort-col');
+
+  if (currentTab === 'penny' || currentTab === 'tech') {
+    thead.innerHTML = `
+      <th class="rank">#</th>
+      <th onclick="sortBy('symbol')">Ticker <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('name')">Company <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('price')" style="text-align:right">Price <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('pct_5d')"  style="text-align:right">5D % <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('pct_15d')" style="text-align:right">15D % <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('pct_45d')" style="text-align:right">45D % <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('pct_3mo')" style="text-align:right">3Mo % <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('pct_1y')"  style="text-align:right">1Y % <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('pct_5y')"  style="text-align:right">5Y % <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('market_cap')" style="text-align:right">Mkt Cap <span class="sort-icon">↕</span></th>
+      <th>1-Mo Chart</th>
+      <th>5-Year Chart</th>`;
+    sortSel.innerHTML = `
+      <option value="month_pct">Sort: 1-Mo %</option>
+      <option value="pct_5d">Sort: 5D %</option>
+      <option value="pct_15d">Sort: 15D %</option>
+      <option value="pct_45d">Sort: 45D %</option>
+      <option value="pct_3mo">Sort: 3Mo %</option>
+      <option value="pct_1y">Sort: 1Y %</option>
+      <option value="pct_5y">Sort: 5Y %</option>
+      <option value="market_cap">Sort: Mkt Cap</option>
+      <option value="price">Sort: Price</option>
+      <option value="symbol">Sort: Ticker A→Z</option>`;
+  } else {
+    thead.innerHTML = `
+      <th class="rank">#</th>
+      <th onclick="sortBy('symbol')">Ticker <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('name')">Company <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('sector')">Sector <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('price')" style="text-align:right">Price <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('day_change')" style="text-align:right">Day Chg <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('day_pct')" style="text-align:right">Day % <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('month_pct')" style="text-align:right">1-Mo % <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('year_pct')" style="text-align:right">10-Yr % <span class="sort-icon">↕</span></th>
+      <th onclick="sortBy('market_cap')" style="text-align:right">Mkt Cap <span class="sort-icon">↕</span></th>
+      <th>1-Month Chart</th>
+      <th>10-Year Chart</th>`;
+    sortSel.innerHTML = `
+      <option value="rank">Sort: Rank</option>
+      <option value="symbol">Sort: Ticker A→Z</option>
+      <option value="price">Sort: Price ↓</option>
+      <option value="day_pct">Sort: Day % ↓</option>
+      <option value="month_pct">Sort: Month % ↓</option>
+      <option value="year_pct">Sort: 10-Yr % ↓</option>
+      <option value="market_cap">Sort: Mkt Cap ↓</option>
+      <option value="name">Sort: Name A→Z</option>`;
+  }
+}
+
+// ── Render Table ───────────────────────────────────────────────────────────
+function renderPage() {
+  const tbody = document.getElementById('table-body');
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page  = filtered.slice(start, start + PAGE_SIZE);
+
+  if (page.length === 0) {
+    const cols = (currentTab === 'penny' || currentTab === 'tech') ? 12 : 12;
+    const msg  = currentTab === 'penny'
+      ? 'No stocks meet the ≥30% growth threshold for this period and price tier.'
+      : 'Try a different search, sector, or price filter.';
+    tbody.innerHTML = `<tr><td colspan="${cols}">
+      <div class="empty-state"><h3>No results</h3><p>${msg}</p></div></td></tr>`;
+    return;
+  }
+
+  if (currentTab === 'penny' || currentTab === 'tech') {
+    tbody.innerHTML = page.map((s, i) => renderPennyRow(s, start + i)).join('');
+  } else {
+    tbody.innerHTML = page.map((s, i) => renderStockRow(s, start + i)).join('');
+  }
+}
+
+function renderStockRow(s, idx) {
+  const dayClass  = s.day_pct > 0 ? 'up' : s.day_pct < 0 ? 'down' : 'flat';
+  const moClass   = s.month_pct > 0 ? 'up' : s.month_pct < 0 ? 'down' : 'flat';
+  const yrClass   = s.year_pct != null ? (s.year_pct > 0 ? 'up' : s.year_pct < 0 ? 'down' : 'flat') : 'flat';
+  const arrow     = s.day_pct > 0 ? '▲' : s.day_pct < 0 ? '▼' : '—';
+  const spark1m   = makeSVGSparkline(s.prices      || [], s.month_pct >= 0, 120, 40, s.dates      || []);
+  const spark10y  = makeSVGSparkline(s.prices_10y  || [], (s.year_pct ?? 0) >= 0, 160, 48, s.dates_10y  || []);
+  const absDay    = Math.abs(s.day_change).toFixed(2);
+  const daySign   = s.day_change >= 0 ? '+' : '-';
+  const yrBadge   = s.year_pct != null
+    ? `<span class="change-badge ${yrClass}">${fmtPct(s.year_pct)}</span>`
+    : `<span style="color:var(--text2);font-size:12px">—</span>`;
+  return `<tr>
+    <td class="rank">${idx + 1}</td>
+    <td class="ticker" style="white-space:nowrap">
+      ${esc(s.symbol)}
+      <button class="info-btn" onclick="openProfile('${esc(s.symbol)}')" title="Company profile" style="margin-left:5px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </button>
+    </td>
+    <td class="company-name">${esc(s.name)}<small>${esc(s.sector)}</small></td>
+    <td><span class="sector-tag">${esc(s.sector)}</span></td>
+    <td class="price" style="text-align:right">$${fmtPrice(s.price)}</td>
+    <td class="change ${dayClass}" style="text-align:right">${daySign}$${absDay}</td>
+    <td style="text-align:right"><span class="change-badge ${dayClass}">${arrow} ${fmtPct(s.day_pct)}</span></td>
+    <td style="text-align:right"><span class="change-badge ${moClass}">${fmtPct(s.month_pct)}</span></td>
+    <td style="text-align:right">${yrBadge}</td>
+    <td style="text-align:right;font-size:12px;color:var(--text2)">${fmtBigNum(s.market_cap)}</td>
+    <td class="sparkline-cell">${spark1m}</td>
+    <td class="sparkline-cell" style="min-width:160px">${spark10y}</td>
+  </tr>`;
+}
+
+function renderPennyRow(s, idx) {
+  const spark    = makeSVGSparkline(s.prices      || [], (s.month_pct || 0) >= 0, 120, 40, s.dates      || []);
+  const spark5y  = makeSVGSparkline(s.prices_10y  || [], (s.pct_5y   ?? 0)  >= 0, 160, 48, s.dates_10y  || []);
+
+  function pctCell(val) {
+    if (val == null)
+      return `<td style="text-align:right"><span style="color:var(--text2);font-size:11px">—</span></td>`;
+    const cls  = val >= 30 ? 'up' : val > 0 ? 'flat' : 'down';
+    const extra = val >= 30 ? ' class="growth-hit"' : val >= 15 ? ' class="growth-near"' : '';
+    return `<td style="text-align:right"${extra}><span class="change-badge ${cls}">${val >= 0 ? '+' : ''}${val.toFixed(2)}%</span></td>`;
+  }
+
+  return `<tr>
+    <td class="rank">${idx + 1}</td>
+    <td class="ticker" style="white-space:nowrap">
+      ${esc(s.symbol)}
+      <button class="info-btn" onclick="openProfile('${esc(s.symbol)}')" title="Company profile" style="margin-left:5px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </button>
+    </td>
+    <td class="company-name">${esc(s.name)}<small>${esc(s.sector || '—')}</small></td>
+    <td class="price" style="text-align:right">$${fmtPrice(s.price)}</td>
+    ${pctCell(s.pct_5d)}
+    ${pctCell(s.pct_15d)}
+    ${pctCell(s.pct_45d)}
+    ${pctCell(s.pct_3mo)}
+    ${pctCell(s.pct_1y)}
+    ${pctCell(s.pct_5y)}
+    <td style="text-align:right;font-size:12px;color:var(--text2)">${fmtBigNum(s.market_cap)}</td>
+    <td class="sparkline-cell">${spark}</td>
+    <td class="sparkline-cell" style="min-width:160px">${spark5y}</td>
+  </tr>`;
+}
+
+// ── SVG Sparkline ─────────────────────────────────────────────────────────
+function makeSVGSparkline(prices, isUp, W = 120, H = 40, dates = []) {
+  if (!prices || prices.length < 2) {
+    return `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="display:block">
+      <line x1="${W*0.1}" y1="${H/2}" x2="${W*0.9}" y2="${H/2}" stroke="#30363d" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="${W/2}" y="${H/2+4}" text-anchor="middle" fill="#8b949e" font-size="9" font-family="sans-serif">no data</text>
+    </svg>`;
+  }
+  const PAD = 3;
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const range = max - min || 1;
+
+  const pts = prices.map((p, i) => {
+    const x = PAD + (i / (prices.length - 1)) * (W - PAD * 2);
+    const y = PAD + (1 - (p - min) / range) * (H - PAD * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+
+  const color  = isUp ? '#3fb950' : '#f85149';
+  const fillId = `f${Math.random().toString(36).slice(2,7)}`;
+  const firstPt = pts[0].split(',');
+  const lastPt  = pts[pts.length - 1].split(',');
+  const fillPts = `${pts.join(' ')} ${lastPt[0]},${H} ${firstPt[0]},${H}`;
+
+  // Encode prices+dates as data attributes for the tooltip handler
+  const dataP = JSON.stringify(prices);
+  const dataD = JSON.stringify(dates.length ? dates : prices.map((_, i) => i + 1));
+
+  return `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;cursor:crosshair"
+      class="sp-chart" data-prices='${dataP}' data-dates='${dataD}' data-w="${W}" data-pad="${PAD}">
+    <defs>
+      <linearGradient id="${fillId}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity=".25"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <polygon points="${fillPts}" fill="url(#${fillId})"/>
+    <polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>
+    <circle cx="${lastPt[0]}" cy="${lastPt[1]}" r="2.5" fill="${color}"/>
+    <line class="sp-vline" x1="-1" y1="0" x2="-1" y2="${H}" stroke="rgba(255,255,255,.35)" stroke-width="1" stroke-dasharray="3 2"/>
+    <circle class="sp-dot" cx="-10" cy="-10" r="3" fill="${color}" stroke="var(--bg2)" stroke-width="1.5"/>
+    <rect width="${W}" height="${H}" fill="transparent"/>
+  </svg>`;
+}
+
+// ── Pagination ─────────────────────────────────────────────────────────────
+function renderPagination() {
+  const total = Math.ceil(filtered.length / PAGE_SIZE);
+  const el = document.getElementById('pagination');
+  if (total <= 1) { el.innerHTML = ''; return; }
+
+  let html = '';
+  html += pageBtn('‹', currentPage > 1, currentPage - 1);
+
+  const pages = paginationRange(currentPage, total);
+  pages.forEach(p => {
+    if (p === '…') {
+      html += `<span style="color:var(--text2);padding:0 4px">…</span>`;
+    } else {
+      html += `<button class="page-btn ${p === currentPage ? 'active' : ''}"
+                onclick="goPage(${p})">${p}</button>`;
+    }
+  });
+
+  html += pageBtn('›', currentPage < total, currentPage + 1);
+  el.innerHTML = html;
+}
+
+function pageBtn(label, enabled, page) {
+  if (!enabled) return `<button class="page-btn" disabled>${label}</button>`;
+  return `<button class="page-btn" onclick="goPage(${page})">${label}</button>`;
+}
+
+function goPage(p) {
+  currentPage = p;
+  renderPage();
+  renderPagination();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function paginationRange(cur, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (cur <= 4)   return [1, 2, 3, 4, 5, '…', total];
+  if (cur >= total - 3) return [1, '…', total-4, total-3, total-2, total-1, total];
+  return [1, '…', cur-1, cur, cur+1, '…', total];
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function fmtBigNum(n) {
+  if (!n) return '—';
+  if (n >= 1e12) return `$${(n/1e12).toFixed(2)}T`;
+  if (n >= 1e9)  return `$${(n/1e9).toFixed(2)}B`;
+  if (n >= 1e6)  return `$${(n/1e6).toFixed(2)}M`;
+  return `$${n.toLocaleString()}`;
+}
+function fmtPrice(n) {
+  return n >= 1000
+    ? n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : n.toFixed(2);
+}
+function fmtPct(n) {
+  const sign = n > 0 ? '+' : '';
+  return `${sign}${n.toFixed(2)}%`;
+}
+function setText(id, val) {
+  document.getElementById(id).textContent = val;
+}
+function esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function setBadge(cls, text) {
+  const b = document.getElementById('status-badge');
+  b.className = cls;
+  b.textContent = text;
+}
+function showOverlay(show) {
+  document.getElementById('loading-overlay').classList.toggle('visible', show);
+}
+
+// ── Company Profile Modal ──────────────────────────────────────────────────
+async function openProfile(symbol) {
+  document.getElementById('profile-overlay').classList.add('visible');
+  document.getElementById('profile-content').innerHTML =
+    '<div class="modal-spinner"><div class="spinner" style="width:32px;height:32px;margin:0 auto 12px"></div>Loading profile…</div>';
+
+  try {
+    const res  = await fetch(`/api/profile/${encodeURIComponent(symbol)}`);
+    const data = await res.json();
+    renderProfile(data);
+  } catch {
+    document.getElementById('profile-content').innerHTML =
+      '<div class="modal-spinner">Failed to load profile.</div>';
+  }
+}
+
+function closeProfile(e) {
+  if (e.target === document.getElementById('profile-overlay') || e.currentTarget === null) {
+    document.getElementById('profile-overlay').classList.remove('visible');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('profile-overlay').classList.remove('visible');
+});
+
+function renderProfile(d) {
+  const stock = allStocks.find(s => s.symbol === d.symbol) || {};
+  const dayClass = (stock.day_pct || 0) >= 0 ? 'up' : 'down';
+  const dayArrow = (stock.day_pct || 0) >= 0 ? '▲' : '▼';
+
+  function stat(label, value, unit = '') {
+    const display = (value == null || value === 'N/A') ? '—' : `${value}${unit}`;
+    return `<div class="modal-stat">
+      <div class="ms-label">${label}</div>
+      <div class="ms-value">${display}</div>
+    </div>`;
+  }
+
+  const fmtBig = fmtBigNum;  // reuse global helper
+
+  function fmtNum(n, decimals = 2) {
+    return n != null ? Number(n).toFixed(decimals) : null;
+  }
+
+  const html = `
+    <div class="modal-header">
+      <div class="modal-title">
+        <div>
+          <div class="modal-symbol">${esc(d.symbol)}</div>
+          <div class="modal-name">${esc(d.longName || d.shortName || '')}</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('profile-overlay').classList.remove('visible')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-price-row">
+        <span class="modal-price">$${fmtPrice(stock.price || d.currentPrice || 0)}</span>
+        <span class="change-badge ${dayClass}" style="font-size:14px">
+          ${dayArrow} ${fmtPct(stock.day_pct || 0)} today
+        </span>
+        ${stock.month_pct != null ? `<span class="change-badge ${(stock.month_pct||0)>=0?'up':'down'}" style="font-size:14px">${fmtPct(stock.month_pct)} 1-mo</span>` : ''}
+        ${stock.year_pct != null ? `<span class="change-badge ${(stock.year_pct||0)>=0?'up':'down'}" style="font-size:14px">${fmtPct(stock.year_pct)} 10-yr</span>` : ''}
+      </div>
+      <div class="modal-tags">
+        ${d.sector   ? `<span class="modal-tag">${esc(d.sector)}</span>` : ''}
+        ${d.industry ? `<span class="modal-tag" style="background:rgba(63,185,80,.1);color:var(--green);border-color:rgba(63,185,80,.3)">${esc(d.industry)}</span>` : ''}
+        ${d.country  ? `<span class="modal-tag" style="background:rgba(210,153,34,.1);color:var(--yellow);border-color:rgba(210,153,34,.3)">${esc(d.country)}</span>` : ''}
+      </div>
+      ${d.website ? `<div style="margin:8px 0 0"><a href="${esc(d.website)}" target="_blank" style="color:var(--accent);font-size:12px">${esc(d.website)}</a></div>` : ''}
+
+      ${d.longBusinessSummary ? `
+        <div style="margin:16px 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text2);font-weight:600">About</div>
+        <div class="modal-desc">${esc(d.longBusinessSummary)}</div>` : ''}
+
+      <div style="margin:16px 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text2);font-weight:600">Key Metrics</div>
+      <div class="modal-grid">
+        ${stat('Market Cap',        fmtBig(d.marketCap))}
+        ${stat('P/E Ratio',         fmtNum(d.trailingPE))}
+        ${stat('Forward P/E',       fmtNum(d.forwardPE))}
+        ${stat('EPS (TTM)',         fmtNum(d.trailingEps))}
+        ${stat('Dividend Yield',    d.dividendYield ? (d.dividendYield * 100).toFixed(2) + '%' : null)}
+        ${stat('Dividend Rate',     d.dividendRate ? '$' + fmtNum(d.dividendRate) : null)}
+        ${stat('52-Wk High',        d.fiftyTwoWeekHigh ? '$' + fmtNum(d.fiftyTwoWeekHigh) : null)}
+        ${stat('52-Wk Low',         d.fiftyTwoWeekLow  ? '$' + fmtNum(d.fiftyTwoWeekLow)  : null)}
+        ${stat('Beta',              fmtNum(d.beta))}
+        ${stat('Avg Volume',        d.averageVolume ? (d.averageVolume/1e6).toFixed(1)+'M' : null)}
+        ${stat('Revenue (TTM)',     fmtBig(d.totalRevenue))}
+        ${stat('Profit Margin',     d.profitMargins ? (d.profitMargins*100).toFixed(1)+'%' : null)}
+        ${stat('ROE',               d.returnOnEquity ? (d.returnOnEquity*100).toFixed(1)+'%' : null)}
+        ${stat('Debt / Equity',     fmtNum(d.debtToEquity))}
+        ${stat('Current Ratio',     fmtNum(d.currentRatio))}
+        ${stat('Employees',         d.fullTimeEmployees ? d.fullTimeEmployees.toLocaleString() : null)}
+      </div>
+    </div>`;
+
+  document.getElementById('profile-content').innerHTML = html;
+}
+
+function renderError() {
+  document.getElementById('table-body').innerHTML = `
+    <tr><td colspan="12">
+      <div class="empty-state">
+        <h3>Could not load data</h3>
+        <p>Make sure the server is running: <code>python server.py</code></p>
+      </div>
+    </td></tr>`;
+}
+
+// ── Sparkline Tooltip ──────────────────────────────────────────────────────
+(function () {
+  const tooltip  = document.getElementById('spark-tooltip');
+  const ttDate   = document.getElementById('tt-date');
+  const ttPrice  = document.getElementById('tt-price');
+  let   activeEl = null;
+
+  document.addEventListener('mousemove', e => {
+    const svg = e.target.closest('svg.sp-chart');
+    if (!svg) { hideTooltip(); return; }
+
+    const prices = JSON.parse(svg.dataset.prices);
+    const dates  = JSON.parse(svg.dataset.dates);
+    const W      = parseFloat(svg.dataset.w);
+    const PAD    = parseFloat(svg.dataset.pad);
+    const n      = prices.length;
+
+    const rect  = svg.getBoundingClientRect();
+    const relX  = e.clientX - rect.left;
+
+    // Clamp to chart area
+    const chartW = W - PAD * 2;
+    const frac   = Math.max(0, Math.min(1, (relX - PAD) / chartW));
+    const idx    = Math.round(frac * (n - 1));
+    const price  = prices[idx];
+    const date   = dates[idx];
+
+    // Move vline and dot inside SVG
+    const xPos = PAD + frac * chartW;
+    const min  = Math.min(...prices), max = Math.max(...prices);
+    const range = max - min || 1;
+    const yPos = PAD + (1 - (price - min) / range) * (parseFloat(svg.getAttribute('height')) - PAD * 2);
+
+    svg.querySelector('.sp-vline').setAttribute('x1', xPos.toFixed(1));
+    svg.querySelector('.sp-vline').setAttribute('x2', xPos.toFixed(1));
+    svg.querySelector('.sp-dot').setAttribute('cx', xPos.toFixed(1));
+    svg.querySelector('.sp-dot').setAttribute('cy', yPos.toFixed(1));
+
+    // Format date label
+    let dateLabel = String(date);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateLabel)) {
+      dateLabel = new Date(dateLabel + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    ttDate.textContent  = dateLabel;
+    ttPrice.textContent = '$' + fmtPrice(price);
+
+    // Position tooltip — flip if near right edge
+    const TW = tooltip.offsetWidth || 110;
+    let left = e.clientX + 14;
+    if (left + TW > window.innerWidth - 8) left = e.clientX - TW - 10;
+    tooltip.style.left    = left + 'px';
+    tooltip.style.top     = (e.clientY - 36) + 'px';
+    tooltip.style.display = 'block';
+    activeEl = svg;
+  });
+
+  document.addEventListener('mouseleave', hideTooltip, true);
+
+  function hideTooltip() {
+    tooltip.style.display = 'none';
+    if (activeEl) {
+      activeEl.querySelector('.sp-vline')?.setAttribute('x1', '-1');
+      activeEl.querySelector('.sp-vline')?.setAttribute('x2', '-1');
+      activeEl.querySelector('.sp-dot')?.setAttribute('cx', '-10');
+      activeEl.querySelector('.sp-dot')?.setAttribute('cy', '-10');
+      activeEl = null;
+    }
+  }
+
+  // Hide when mouse leaves an SVG
+  document.addEventListener('mouseover', e => {
+    if (!e.target.closest('svg.sp-chart') && activeEl) hideTooltip();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \":*)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /PID 34060 /F)",
+      "Bash(taskkill /PID 12020 /F)",
+      "Bash(taskkill /PID 28696 /F)",
+      "Bash(taskkill /IM python.exe /F)",
+      "Bash(cmd /c \"taskkill /PID 34060 /F & taskkill /PID 12020 /F & taskkill /PID 28696 /F\")",
+      "Bash(python server.py)",
+      "Bash(curl -s http://localhost:5000/api/status)",
+      "Bash(cmd /c \"taskkill /PID 28696 /F & taskkill /PID 34060 /F & taskkill /PID 30684 /F & taskkill /PID 12020 /F & taskkill /PID 16104 /F\" 2)",
+      "Bash(1 sleep:*)",
+      "Bash(powershell -Command \"Stop-Process -Id 28696,34060,30684,12020,16104 -Force -ErrorAction SilentlyContinue; Start-Sleep 2; \\(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue\\).Count\")",
+      "Bash(powershell -Command \":*)",
+      "Bash(python -m json.tool)",
+      "Bash(curl -s \"http://localhost:5000/api/penny-stocks\")",
+      "Bash(powershell -Command \"$pids = \\(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue\\).OwningProcess | Sort-Object -Unique; if \\($pids\\) { Stop-Process -Id $pids -Force -ErrorAction SilentlyContinue }; Start-Sleep 3; \\(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue\\).Count\")",
+      "Bash(powershell -Command \"$pids = \\(Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue\\).OwningProcess | Sort-Object -Unique; if \\($pids\\) { Stop-Process -Id $pids -Force -ErrorAction SilentlyContinue }; Start-Sleep 2\")",
+      "Bash(curl -s http://localhost:5000/api/refresh/1m)"
+    ]
+  }
+}
