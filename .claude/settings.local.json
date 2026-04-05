@@ -38,7 +38,21 @@
       "Bash(.venv/Scripts/python -m pytest tests/test_api_endpoints.py --no-cov -x)",
       "Bash(.venv/Scripts/python -m pytest tests/test_safe.py tests/test_field_builders.py tests/test_cache_logic.py -v --tb=short --no-cov)",
       "Bash(.venv/Scripts/python -c \":*)",
-      "Bash(.venv/Scripts/python -m pytest tests/test_auth.py -v --tb=short --no-cov)"
+      "Bash(.venv/Scripts/python -m pytest tests/test_auth.py -v --tb=short --no-cov)",
+      "Bash(python -m pytest tests/ -v --tb=short)",
+      "Bash(.venv/Scripts/pytest.exe tests/ -v --tb=short)",
+      "Bash(.venv/Scripts/pytest.exe tests/ -v --tb=short --no-cov)",
+      "Bash(.venv/Scripts/pytest.exe tests/test_auth.py -v --tb=short --no-cov)",
+      "Bash(.venv/Scripts/pytest.exe tests/ --no-cov -q)",
+      "Bash(.venv/Scripts/pytest.exe tests/test_auth.py tests/test_safe.py tests/test_field_builders.py tests/test_cache_logic.py --no-cov -q)",
+      "Bash(.venv/Scripts/python.exe -c \"from server import app; print\\([r.rule for r in app.url_map.iter_rules\\(\\) if ''login'' in r.rule]\\)\")",
+      "Bash(.venv/Scripts/python.exe -c \":*)",
+      "Bash(taskkill /F /PID 58500 /PID 103276 /PID 30388)",
+      "Bash(taskkill //F //PID 58500)",
+      "Bash(taskkill //F //PID 103276)",
+      "Bash(taskkill //F //PID 30388)",
+      "Bash(.venv/Scripts/python.exe server.py)",
+      "Bash(curl -s http://localhost:5000/login -o /dev/null -w \"%{http_code}\")"
     ]
   }
 }
