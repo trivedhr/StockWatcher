@@ -27,7 +27,16 @@
       "Bash(findstr :5000)",
       "Bash(powershell -Command \"Stop-Process -Id 23732 -Force; Stop-Process -Id 13640 -Force\")",
       "Bash(findstr \"LISTEN\")",
-      "Bash(powershell -Command \"Stop-Process -Id 8956 -Force\")"
+      "Bash(powershell -Command \"Stop-Process -Id 8956 -Force\")",
+      "WebFetch(domain:www.heroku.com)",
+      "Bash(.venv/Scripts/pip install:*)",
+      "Bash(.venv/Scripts/python -m pytest tests/ -v --tb=short --no-header)",
+      "Bash(.venv/Scripts/python -m pytest tests/ --no-header -q)",
+      "Bash(.venv/Scripts/python -m pytest tests/test_safe.py tests/test_cache_logic.py tests/test_field_builders.py -q --no-header)",
+      "Bash(.venv/Scripts/python -m pytest tests/ -q --no-header --no-cov)",
+      "Bash(.venv/Scripts/python -m pytest tests/test_api_endpoints.py -q --no-header --no-cov)",
+      "Bash(.venv/Scripts/python -m pytest tests/test_api_endpoints.py --no-cov -x)",
+      "Bash(.venv/Scripts/python -m pytest tests/test_safe.py tests/test_field_builders.py tests/test_cache_logic.py -v --tb=short --no-cov)"
     ]
   }
 }

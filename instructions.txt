@@ -1,0 +1,60 @@
+========================================
+  StockPerformer — Server Instructions
+========================================
+
+--- FIRST TIME SETUP ---
+
+Double-click setup.bat  (creates venv, installs all dependencies)
+
+Or from a terminal:
+  cd "C:\Users\trive\OneDrive\Documents\Claude\Projects\StockPerformer"
+  setup.bat
+
+--- START SERVER ---
+
+Option 1: Double-click start.bat
+
+Option 2: Open a terminal in this folder and run:
+  python server.py
+
+Option 3: From any terminal:
+  cd "C:\Users\trive\OneDrive\Documents\Claude\Projects\StockPerformer"
+  .venv\Scripts\activate
+  python server.py
+
+--- ACCESS THE APP ---
+
+Open your browser and go to:
+  http://localhost:5000
+
+--- STOP SERVER ---
+
+Press Ctrl+C in the terminal running server.py
+
+--- IF PORT 5000 IS ALREADY IN USE ---
+
+Run this in PowerShell to kill the old process:
+  Get-NetTCPConnection -LocalPort 5000 | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force }
+
+Then start the server again.
+
+--- PRODUCTION SERVER ---
+
+The app uses Waitress (production WSGI server) automatically when you run server.py.
+Waitress replaces Flask's built-in dev server — it is multi-threaded and safe for real use.
+No extra configuration needed; it starts on port 5000 with 8 worker threads.
+
+--- DEPENDENCIES ---
+
+All dependencies are listed in requirements.txt:
+  flask       - web framework
+  yfinance    - stock market data
+  pandas      - data processing
+  lxml        - HTML parsing
+  requests    - HTTP client
+  waitress    - production WSGI server
+
+To reinstall:
+  pip install -r requirements.txt
+
+========================================

@@ -1,0 +1,88 @@
+name: Scheduled — Hourly Keep-Alive & Daily Redeploy
+
+on:
+  schedule:
+    # ── Every hour: ping the app to prevent Heroku dyno from sleeping ──
+    - cron: "0 * * * *"
+    # ── Every day at 06:00 UTC: force a full redeploy (fresh data caches) ──
+    - cron: "0 6 * * *"
+  workflow_dispatch:       # allow manual trigger from GitHub UI
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 1: Hourly keep-alive ping
+  # Calls the /api/status endpoint so the Heroku dyno doesn't sleep.
+  # Runs every hour (including the 06:00 slot alongside the daily deploy).
+  # ─────────────────────────────────────────────────────────────────────────
+  keep-alive:
+    name: Keep-Alive Ping
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping app
+        run: |
+          URL="https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com/api/status"
+          echo "Pinging $URL ..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$URL" || echo "000")
+          echo "Response: $STATUS"
+          if [ "$STATUS" = "200" ]; then
+            echo "✓ App is alive."
+          elif [ "$STATUS" = "000" ]; then
+            echo "::warning::Request timed out or connection refused."
+          else
+            echo "::warning::Unexpected status $STATUS"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Job 2: Daily redeploy (06:00 UTC)
+  # Forces Heroku to rebuild the slug — restarts the server, which triggers
+  # server.py _boot() and refreshes all stock data caches.
+  # Only runs on the 06:00 cron; skipped on other hours.
+  # ─────────────────────────────────────────────────────────────────────────
+  daily-redeploy:
+    name: Daily Redeploy
+    runs-on: ubuntu-latest
+    # Only run this job when triggered by the 06:00 cron or manual dispatch
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' &&
+       startsWith(github.event.schedule, '0 6'))
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Validate before deploy
+        run: |
+          pip install -r requirements.txt
+          python -m py_compile server.py
+          echo "✓ Validation passed"
+
+      - name: Deploy to Heroku (triggers cache refresh on boot)
+        uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          procfile: "Procfile"
+
+      - name: Wait for boot & verify
+        run: |
+          echo "Waiting 30s for server to boot and start cache refresh..."
+          sleep 30
+          URL="https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com/api/status"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$URL" || echo "000")
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" = "200" ]; then
+            echo "✓ Daily redeploy successful. Cache refresh running in background."
+          else
+            echo "::warning::Status $STATUS — check Heroku logs."
+          fi

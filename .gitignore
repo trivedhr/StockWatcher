@@ -1,0 +1,28 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Auto-generated data caches (rebuilt on server start)
+stock_data_cache.json
+penny_data_cache.json
+tech_data_cache.json
+etf_data_cache.json
+
+# User data — keep these in git so they survive redeployment
+# watchlist.json
+# etf_stocks.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

@@ -1,13 +1,18 @@
 @echo off
-echo ========================================
-echo   StockPerformer - S^&P 500 Dashboard
-echo ========================================
+cd /d "%~dp0"
+
+if not exist ".venv\Scripts\activate.bat" (
+    echo [ERROR] Virtual environment not found.
+    echo         Run setup.bat first to install all dependencies.
+    pause
+    exit /b 1
+)
+
+call .venv\Scripts\activate.bat
 echo.
-echo Installing dependencies...
-pip install -r requirements.txt
-echo.
-echo Starting server...
-echo Open http://localhost:5000 in your browser
+echo ========================================
+echo   StockPerformer  --  http://localhost:5000
+echo ========================================
 echo.
 python server.py
 pause

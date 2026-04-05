@@ -1,0 +1,87 @@
+name: CI — Test & Validate
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check syntax
+        run: |
+          python -m py_compile server.py
+          echo "✓ server.py syntax OK"
+
+      - name: Verify key imports
+        run: |
+          python - <<'EOF'
+          import flask, yfinance, pandas, requests, lxml, waitress, pytest
+          print(f"✓ flask       {flask.__version__}")
+          print(f"✓ yfinance    {yfinance.__version__}")
+          print(f"✓ pandas      {pandas.__version__}")
+          print(f"✓ requests    {requests.__version__}")
+          print(f"✓ waitress    OK")
+          print(f"✓ lxml        OK")
+          print(f"✓ pytest      {pytest.__version__}")
+          EOF
+
+      # ── Unit tests (pure functions, no network) ──────────────────────────
+      - name: Unit tests — _safe(), field builders, cache logic
+        run: |
+          pytest tests/test_safe.py \
+                 tests/test_field_builders.py \
+                 tests/test_cache_logic.py \
+                 -v --tb=short \
+                 --cov=server --cov-report=term-missing \
+                 --cov-report=xml:coverage-unit.xml \
+                 --no-cov-on-fail
+
+      # ── API tests (Flask test client, yfinance mocked) ────────────────────
+      - name: API endpoint tests — Flask routes
+        run: |
+          pytest tests/test_api_endpoints.py \
+                 -v --tb=short \
+                 --cov=server --cov-append \
+                 --cov-report=term-missing \
+                 --cov-report=xml:coverage.xml \
+                 --cov-fail-under=40
+
+      # ── Upload coverage to GitHub Actions summary ─────────────────────────
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 14
+
+      - name: Post coverage summary
+        if: always()
+        run: |
+          python - <<'EOF'
+          import xml.etree.ElementTree as ET, sys
+          try:
+              tree = ET.parse('coverage.xml')
+              cov  = float(tree.getroot().attrib.get('line-rate', 0)) * 100
+              print(f"### Coverage: {cov:.1f}%")
+              print(f"Threshold: 40% — {'✓ PASS' if cov >= 40 else '✗ FAIL'}")
+          except Exception as e:
+              print(f"Could not parse coverage.xml: {e}")
+          EOF

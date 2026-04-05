@@ -26,6 +26,7 @@ MAX_AGE_1M_H   = 24          # hours before re-fetching 1-month data
 MAX_AGE_10Y_D  = 10          # days  before re-fetching 10-year data
 PENNY_TOP_N         = 500         # max penny stocks to keep
 PENNY_CACHE_VERSION = 2           # bump when data schema changes to force re-fetch
+SP500_CACHE_VERSION = 2           # v2: switched pass-1 from 1mo to 1y daily
 
 TECH_CACHE          = os.path.join(BASE_DIR, 'tech_data_cache.json')
 TECH_CACHE_VERSION  = 1
@@ -355,10 +356,12 @@ def _penny_time_fields(cl):
         day_pct      = round(dc / prev * 100 if prev else 0, 2),
         month_change = round(cur - op, 2),
         month_pct    = round((cur - op) / op * 100 if op else 0, 2),
+        pct_1mo      = round((cur - op) / op * 100 if op else 0, 2),
         pct_5d       = pct_n(5),
         pct_15d      = pct_n(15),
         pct_45d      = pct_n(45),
-        pct_3mo      = pct_n(65),
+        pct_3mo      = pct_n(63),
+        pct_6mo      = pct_n(126),
         pct_1y       = round((cur - prices[0]) / prices[0] * 100, 2) if prices[0] else None,
         prices       = prices[-22:],   # last ~1 month for sparkline
         dates        = dates[-22:],
@@ -402,24 +405,25 @@ def refresh_sp500(force_1m=False, force_10y=False):
     ts_1m  = disk.get('last_1m_update')  if disk else None
     ts_10y = disk.get('last_10y_update') if disk else None
 
-    # Pass 1 — 1-month
+    # Pass 1 — 1-year daily (gives 1mo/3mo/6mo/1y % + sparklines)
     if do_1m:
-        print(f'[INFO] Updating 1-month data (age={_age_h(ts_1m):.1f}h)…')
-        cl1m = download_closes(syms, '1mo', '1d')
+        print(f'[INFO] Updating 1-year daily data (age={_age_h(ts_1m):.1f}h)…')
+        cl1y = download_closes(syms, '1y', '1d')
         for t in tickers:
             sy = t['symbol'].replace('.', '-')
-            if sy not in cl1m: continue
-            f = _1m_fields(cl1m[sy])
+            if sy not in cl1y: continue
+            f = _penny_time_fields(cl1y[sy])
             if not f: continue
             if sy not in smap:
                 smap[sy] = {'symbol': t['symbol'], 'name': t['name'],
                             'sector': t['sector'], 'market_cap': None,
-                            'prices_10y': [], 'dates_10y': [], 'year_pct': None}
+                            'prices_10y': [], 'dates_10y': [], 'year_pct': None,
+                            'pct_5y': None, 'pct_3mo': None, 'pct_6mo': None}
             smap[sy].update(f)
         ts_1m = datetime.now().isoformat()
-        print(f'[INFO] 1-month done ({len(cl1m)} stocks).')
+        print(f'[INFO] 1-year daily done ({len(cl1y)} stocks).')
     else:
-        print(f'[INFO] 1-month fresh ({_age_h(ts_1m):.1f}h old) — skip.')
+        print(f'[INFO] 1-year data fresh ({_age_h(ts_1m):.1f}h old) — skip.')
 
     # Pass 2 — 10-year + market cap
     if do_10y:
@@ -448,7 +452,8 @@ def refresh_sp500(force_1m=False, force_10y=False):
               for s in [smap.get(t['symbol'].replace('.', '-'))]
               if s and s.get('prices')]
 
-    payload = dict(time=datetime.now().isoformat(),
+    payload = dict(version=SP500_CACHE_VERSION,
+                   time=datetime.now().isoformat(),
                    last_1m_update=ts_1m, last_10y_update=ts_10y,
                    tickers=tickers, data=stocks)
     _save(CACHE_FILE, payload)
@@ -1107,7 +1112,7 @@ def _boot(cache_path, state_dict, refresh_fn, label, required_version=None):
         threading.Thread(target=refresh_fn, daemon=True).start()
 
 if __name__ == '__main__':
-    _boot(CACHE_FILE,  _sp500, refresh_sp500, 'S&P 500')
+    _boot(CACHE_FILE,  _sp500, refresh_sp500, 'S&P 500', required_version=SP500_CACHE_VERSION)
     _boot(PENNY_CACHE, _penny, refresh_penny, 'Penny', required_version=PENNY_CACHE_VERSION)
     _boot(TECH_CACHE,  _tech,  refresh_tech,  'Tech',  required_version=TECH_CACHE_VERSION)
     _boot(ETF_CACHE,   _etf,   refresh_etf,   'ETF',   required_version=ETF_CACHE_VERSION)
@@ -1137,4 +1142,14 @@ if __name__ == '__main__':
     print('\n========================================')
     print('  StockPerformer  ->  http://localhost:5000')
     print('========================================\n')
-    app.run(debug=False, port=5000, use_reloader=False)
+
+    port = int(os.environ.get('PORT', 5000))
+    try:
+        from waitress import serve
+        print(f'[INFO] Starting production WSGI server (Waitress) on port {port}...')
+        serve(app, host='0.0.0.0', port=port, threads=8,
+              channel_timeout=120, cleanup_interval=30)
+    except ImportError:
+        print('[WARN] waitress not installed — falling back to Flask dev server.')
+        print('[WARN] Run: pip install waitress')
+        app.run(debug=False, port=port, use_reloader=False)

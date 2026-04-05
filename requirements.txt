@@ -3,3 +3,10 @@ yfinance
 pandas
 lxml
 requests
+waitress
+sqlalchemy
+authlib
+PyJWT
+python-dotenv
+pytest
+pytest-cov

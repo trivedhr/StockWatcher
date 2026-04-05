@@ -1,0 +1,50 @@
+name: CD — Deploy to Heroku
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:       # allow manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history required by heroku deploy action
+
+      - name: Set up Python (validate before deploy)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install & validate dependencies
+        run: |
+          pip install -r requirements.txt
+          python -m py_compile server.py
+          echo "✓ Build validation passed"
+
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          procfile: "Procfile"
+          # Heroku buildpack will install requirements.txt automatically
+
+      - name: Verify deployment (health check)
+        run: |
+          sleep 15
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com/api/status")
+          echo "HTTP status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "::warning::Health check returned $STATUS — app may still be booting."
+          else
+            echo "✓ App is live and responding."
+          fi
