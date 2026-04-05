@@ -1,0 +1,456 @@
+<!-- Copyright 2026 Lukin -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign In — StockPerformer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:           #0f0820;
+    --bg2:          #1c0e3a;
+    --bg3:          #2a1655;
+    --border:       #3d1f7a;
+    --text:         #f0eaff;
+    --text2:        #a899c4;
+    --accent:       #0490dc;
+    --purple:       #5a1ba9;
+    --purple-dark:  #300b60;
+    --purple-light: #7c3fd6;
+    --orange:       #ee643f;
+    --green:        #3fb950;
+    --green-bg:     rgba(63,185,80,0.12);
+    --red:          #f85149;
+    --red-bg:       rgba(248,81,73,0.12);
+    --radius:       4px;
+    --font:         'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* ── Left Brand Panel ── */
+  .brand-panel {
+    width: 420px;
+    flex-shrink: 0;
+    background: linear-gradient(160deg, var(--purple-dark) 0%, var(--purple) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .brand-panel::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    top: -200px; right: -150px;
+    pointer-events: none;
+  }
+  .brand-panel::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+    bottom: -100px; left: -80px;
+    pointer-events: none;
+  }
+  .brand-logo {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.3px;
+    position: relative; z-index: 1;
+  }
+  .brand-logo svg { color: rgba(255,255,255,0.9); }
+  .brand-headline {
+    position: relative; z-index: 1;
+  }
+  .brand-headline h1 {
+    font-size: 32px; font-weight: 800; color: #fff;
+    line-height: 1.2; margin-bottom: 16px;
+  }
+  .brand-headline h1 span { color: rgba(255,255,255,0.6); }
+  .brand-headline p {
+    font-size: 15px; color: rgba(255,255,255,0.65); line-height: 1.6;
+  }
+  .brand-stats {
+    display: flex; gap: 24px; position: relative; z-index: 1;
+  }
+  .brand-stat .num {
+    font-size: 24px; font-weight: 800; color: #fff;
+  }
+  .brand-stat .lbl {
+    font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px;
+  }
+
+  /* ── Right Auth Panel ── */
+  .auth-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    overflow-y: auto;
+  }
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* ── Tab switcher ── */
+  .auth-tabs {
+    display: flex;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px;
+    margin-bottom: 28px;
+  }
+  .auth-tab {
+    flex: 1; padding: 9px; text-align: center;
+    font-size: 13px; font-weight: 700;
+    border-radius: 2px; cursor: pointer;
+    color: var(--text2); border: none; background: none;
+    transition: all .15s;
+  }
+  .auth-tab.active {
+    background: var(--purple);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(90,27,169,.4);
+  }
+
+  /* ── Form ── */
+  .auth-form { display: none; }
+  .auth-form.active { display: block; }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-size: 12px; font-weight: 700;
+    color: var(--text2); letter-spacing: .05em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%; padding: 11px 14px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-size: 14px; font-family: var(--font);
+    outline: none; transition: border-color .15s;
+  }
+  .field input:focus { border-color: var(--purple-light); }
+  .field input::placeholder { color: var(--text2); }
+
+  .btn-submit {
+    width: 100%; padding: 12px;
+    background: var(--orange); color: #fff;
+    border: none; border-radius: var(--radius);
+    font-size: 14px; font-weight: 700; font-family: var(--font);
+    cursor: pointer; transition: all .15s; letter-spacing: .02em;
+    box-shadow: 0 2px 12px rgba(238,100,63,.35);
+  }
+  .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: .5; cursor: wait; }
+
+  /* ── Divider ── */
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0;
+    color: var(--text2); font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1;
+    height: 1px; background: var(--border);
+  }
+
+  /* ── Social buttons ── */
+  .social-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .social-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg2);
+    color: var(--text);
+    font-size: 13px; font-weight: 600; font-family: var(--font);
+    text-decoration: none;
+    transition: all .15s; cursor: pointer;
+  }
+  .social-btn:hover { border-color: var(--purple-light); background: var(--bg3); }
+  .social-btn svg { flex-shrink: 0; }
+
+  /* ── Banner ── */
+  #auth-banner {
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px; font-weight: 600;
+    margin-bottom: 20px;
+    display: none;
+  }
+  #auth-banner.ok  { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+  #auth-banner.err { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red); }
+
+  /* ── Footer ── */
+  .auth-footer {
+    margin-top: 28px; text-align: center;
+    font-size: 12px; color: var(--text2);
+  }
+  .auth-footer a { color: var(--purple-light); text-decoration: none; }
+  .auth-footer a:hover { text-decoration: underline; }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    body { flex-direction: column; }
+    .brand-panel { width: 100%; padding: 28px 24px 24px; }
+    .brand-headline h1 { font-size: 22px; }
+    .brand-panel::before, .brand-panel::after { display: none; }
+    .brand-stats { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Left: brand panel -->
+<div class="brand-panel">
+  <div class="brand-logo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+      <polyline points="16 7 22 7 22 13"/>
+    </svg>
+    StockPerformer
+  </div>
+
+  <div class="brand-headline">
+    <h1>Track the markets.<br/><span>Beat the noise.</span></h1>
+    <p>S&amp;P 500, penny stocks, ETFs, and your personal watchlist — all in one place.</p>
+  </div>
+
+  <div class="brand-stats">
+    <div class="brand-stat">
+      <div class="num">500+</div>
+      <div class="lbl">S&amp;P 500 stocks</div>
+    </div>
+    <div class="brand-stat">
+      <div class="num">250+</div>
+      <div class="lbl">ETFs tracked</div>
+    </div>
+    <div class="brand-stat">
+      <div class="num">30yr</div>
+      <div class="lbl">Historical charts</div>
+    </div>
+  </div>
+</div>
+
+<!-- Right: auth panel -->
+<div class="auth-panel">
+  <div class="auth-card">
+
+    <!-- Tab switcher -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="auth-tab"        onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- Status banner -->
+    <div id="auth-banner"></div>
+
+    <!-- ── Login form ── -->
+    <form class="auth-form active" id="form-login" onsubmit="submitLogin(event)">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password"/>
+      </div>
+      <button type="submit" class="btn-submit" id="login-btn">Sign In</button>
+    </form>
+
+    <!-- ── Register form ── -->
+    <form class="auth-form" id="form-register" onsubmit="submitRegister(event)">
+      <div class="field">
+        <label>Display Name <span style="font-weight:400;text-transform:none">(optional)</span></label>
+        <input type="text" id="reg-name" placeholder="Your name" autocomplete="name"/>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="you@example.com" required autocomplete="email"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Min. 8 characters" required autocomplete="new-password"/>
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <input type="password" id="reg-confirm" placeholder="Repeat password" required autocomplete="new-password"/>
+      </div>
+      <button type="submit" class="btn-submit" id="register-btn">Create Account</button>
+    </form>
+
+    <!-- Divider -->
+    <div class="divider">or continue with</div>
+
+    <!-- Social buttons -->
+    <div class="social-grid">
+      <a href="/auth/google/login" class="social-btn">
+        <!-- Google G -->
+        <svg width="18" height="18" viewBox="0 0 48 48">
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v8.51h12.84c-.58 2.93-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.19-10.36 7.19-17.14z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        </svg>
+        Google
+      </a>
+      <a href="/auth/microsoft/login" class="social-btn">
+        <!-- Microsoft -->
+        <svg width="18" height="18" viewBox="0 0 23 23">
+          <rect x="1"  y="1"  width="10" height="10" fill="#f25022"/>
+          <rect x="12" y="1"  width="10" height="10" fill="#7fba00"/>
+          <rect x="1"  y="12" width="10" height="10" fill="#00a4ef"/>
+          <rect x="12" y="12" width="10" height="10" fill="#ffb900"/>
+        </svg>
+        Microsoft
+      </a>
+      <a href="/auth/facebook/login" class="social-btn">
+        <!-- Facebook -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+        Facebook
+      </a>
+      <a href="/auth/apple/login" class="social-btn">
+        <!-- Apple -->
+        <svg width="18" height="18" viewBox="0 0 814 1000" fill="var(--text)">
+          <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 389.6 23.1 298.7 23.1 212.6c0-204.4 133.4-312.5 260.4-312.5 100 0 163.3 65.4 219.2 65.4 52.1 0 133.4-69.4 249.8-69.4zm-198.3-90.5c25.1-31.6 42.8-75.5 42.8-119.4 0-6.1-.6-12.2-1.9-17.3-40.2 1.3-88.2 26.8-116.3 60.8-22.5 26.2-44.4 71.5-44.4 116 0 6.7 1.3 13.5 1.9 15.5 2.6.6 6.5 1.3 10.4 1.3 35.9 0 81.5-24.5 107.5-56.9z"/>
+        </svg>
+        Apple
+      </a>
+    </div>
+
+    <div class="auth-footer">
+      <a href="/">← Back to dashboard</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── Tab switching ─────────────────────────────────────────────────────────
+  function switchTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0) === (tab === 'login'));
+    });
+    document.getElementById('form-login').classList.toggle('active',    tab === 'login');
+    document.getElementById('form-register').classList.toggle('active', tab === 'register');
+    hideBanner();
+  }
+
+  // ── Banner ────────────────────────────────────────────────────────────────
+  function showBanner(msg, type) {
+    const b = document.getElementById('auth-banner');
+    b.textContent = msg;
+    b.className   = type;  // 'ok' or 'err'
+    b.style.display = 'block';
+  }
+  function hideBanner() {
+    const b = document.getElementById('auth-banner');
+    b.style.display = 'none';
+  }
+
+  // ── Login ─────────────────────────────────────────────────────────────────
+  async function submitLogin(e) {
+    e.preventDefault();
+    const btn   = document.getElementById('login-btn');
+    const email = document.getElementById('login-email').value.trim();
+    const pwd   = document.getElementById('login-password').value;
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    hideBanner();
+    try {
+      const res  = await fetch('/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password: pwd}),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        showBanner('Signed in! Redirecting…', 'ok');
+        setTimeout(() => window.location.href = '/', 800);
+      } else {
+        showBanner(data.error || 'Sign in failed.', 'err');
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    } catch(err) {
+      showBanner('Network error — is the server running?', 'err');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  }
+
+  // ── Register ──────────────────────────────────────────────────────────────
+  async function submitRegister(e) {
+    e.preventDefault();
+    const btn  = document.getElementById('register-btn');
+    const name = document.getElementById('reg-name').value.trim();
+    const email= document.getElementById('reg-email').value.trim();
+    const pwd  = document.getElementById('reg-password').value;
+    const conf = document.getElementById('reg-confirm').value;
+
+    if (pwd !== conf) { showBanner('Passwords do not match.', 'err'); return; }
+    if (pwd.length < 8) { showBanner('Password must be at least 8 characters.', 'err'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Creating account…';
+    hideBanner();
+    try {
+      const res  = await fetch('/auth/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password: pwd, display_name: name}),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        showBanner('Account created! Redirecting…', 'ok');
+        setTimeout(() => window.location.href = '/', 800);
+      } else {
+        showBanner(data.error || 'Registration failed.', 'err');
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    } catch(err) {
+      showBanner('Network error — is the server running?', 'err');
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    }
+  }
+
+  // ── Pre-fill tab from URL param ───────────────────────────────────────────
+  const params = new URLSearchParams(location.search);
+  if (params.get('tab') === 'register') switchTab('register');
+
+  const urlError = params.get('error');
+  if (urlError) showBanner(`Sign in error: ${urlError}`, 'err');
+</script>
+</body>
+</html>

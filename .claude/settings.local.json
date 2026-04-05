@@ -36,7 +36,9 @@
       "Bash(.venv/Scripts/python -m pytest tests/ -q --no-header --no-cov)",
       "Bash(.venv/Scripts/python -m pytest tests/test_api_endpoints.py -q --no-header --no-cov)",
       "Bash(.venv/Scripts/python -m pytest tests/test_api_endpoints.py --no-cov -x)",
-      "Bash(.venv/Scripts/python -m pytest tests/test_safe.py tests/test_field_builders.py tests/test_cache_logic.py -v --tb=short --no-cov)"
+      "Bash(.venv/Scripts/python -m pytest tests/test_safe.py tests/test_field_builders.py tests/test_cache_logic.py -v --tb=short --no-cov)",
+      "Bash(.venv/Scripts/python -c \":*)",
+      "Bash(.venv/Scripts/python -m pytest tests/test_auth.py -v --tb=short --no-cov)"
     ]
   }
 }

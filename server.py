@@ -9,7 +9,11 @@ Cache policy:
   - Market cap            → fetched with 10-year pass, cached 10 days
 """
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, jsonify, send_from_directory
+from werkzeug.middleware.proxy_fix import ProxyFix
 import yfinance as yf
 import pandas as pd
 import requests as req
@@ -18,6 +22,23 @@ from datetime import datetime, timedelta
 from io import StringIO
 
 app    = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # trust Heroku headers
+
+import secrets
+app.secret_key = os.environ.get('SECRET_KEY') or secrets.token_hex(32)
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE']   = os.environ.get('FLASK_ENV') == 'production'
+app.config['PERMANENT_SESSION_LIFETIME'] = 30 * 24 * 3600  # 30 days
+
+# Bootstrap database and auth blueprint
+from db import init_db
+from auth import auth_bp, init_oauth, register_heartbeat
+init_db()
+init_oauth(app)
+app.register_blueprint(auth_bp)
+register_heartbeat(app)
+
 BASE_DIR       = os.path.dirname(os.path.abspath(__file__))
 CACHE_FILE     = os.path.join(BASE_DIR, 'stock_data_cache.json')
 PENNY_CACHE    = os.path.join(BASE_DIR, 'penny_data_cache.json')

@@ -60,6 +60,15 @@ jobs:
                  -v --tb=short \
                  --cov=server --cov-append \
                  --cov-report=term-missing \
+                 --cov-report=xml:coverage.xml
+
+      # ── Auth tests (registration, login, sessions, social OAuth stubs) ──
+      - name: Auth tests — registration, login, sessions
+        run: |
+          pytest tests/test_auth.py \
+                 -v --tb=short \
+                 --cov=auth --cov=db --cov-append \
+                 --cov-report=term-missing \
                  --cov-report=xml:coverage.xml \
                  --cov-fail-under=40
 

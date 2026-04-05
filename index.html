@@ -69,6 +69,139 @@
     align-items: center;
     gap: 12px;
   }
+
+  /* ── Auth: user pill + active sessions ── */
+  .active-sessions-badge {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    background: rgba(4,144,220,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(4,144,220,0.3);
+    white-space: nowrap;
+  }
+  .active-sessions-badge .pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    animation: activePulse 2s infinite;
+  }
+  @keyframes activePulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .user-pill {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px 4px 4px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: background .15s;
+    position: relative;
+  }
+  .user-pill:hover { background: rgba(255,255,255,0.14); }
+  .user-initials {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--purple-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0;
+  }
+  .user-avatar-img {
+    width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
+  }
+  .user-display-name {
+    font-size: 13px; font-weight: 600; color: var(--text);
+    max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  #user-dropdown {
+    display: none;
+    position: fixed;
+    top: 56px; right: 24px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--purple);
+    border-radius: var(--radius);
+    padding: 6px 0;
+    min-width: 200px;
+    z-index: 999;
+    box-shadow: 0 8px 32px rgba(48,11,96,.7);
+  }
+  .dropdown-header {
+    padding: 10px 16px 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .dropdown-header .dd-name  { font-size: 13px; font-weight: 700; color: var(--text); }
+  .dropdown-header .dd-email { font-size: 11px; color: var(--text2); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; }
+  .dropdown-item {
+    display: block; padding: 8px 16px;
+    color: var(--text); font-size: 13px;
+    text-decoration: none; cursor: pointer;
+    background: none; border: none; width: 100%; text-align: left;
+    font-family: var(--font);
+    transition: background .1s;
+  }
+  .dropdown-item:hover { background: rgba(90,27,169,0.15); }
+  .dropdown-item.danger { color: var(--red); }
+  .dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  /* ── Login History Modal ── */
+  #sessions-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.6);
+    z-index: 600;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  #sessions-overlay.visible { display: flex; }
+  #sessions-modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--purple);
+    border-radius: var(--radius);
+    width: 100%; max-width: 780px;
+    max-height: 80vh; overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(48,11,96,.7);
+  }
+  #sessions-modal .sm-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  #sessions-modal .sm-title { font-size: 15px; font-weight: 700; }
+  .sm-close {
+    background: none; border: none; color: var(--text2);
+    font-size: 20px; cursor: pointer; padding: 0 4px;
+    transition: color .15s;
+  }
+  .sm-close:hover { color: var(--text); }
+  .session-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .session-table th {
+    padding: 10px 12px; text-align: left;
+    font-size: 11px; font-weight: 700; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--text2);
+    border-bottom: 2px solid var(--purple); white-space: nowrap;
+    background: var(--bg2);
+  }
+  .session-table td {
+    padding: 10px 12px; border-bottom: 1px solid var(--border);
+    color: var(--text); vertical-align: middle; white-space: nowrap;
+  }
+  .session-table tr.current-session td { background: rgba(90,27,169,.1); }
+  .provider-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 2px;
+    font-size: 11px; font-weight: 600;
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
+  }
+  .active-dot {
+    width: 7px; height: 7px; border-radius: 50%; display: inline-block;
+    background: var(--green);
+  }
   #status-badge {
     padding: 3px 10px;
     border-radius: 20px;
@@ -835,7 +968,14 @@
     StockPerformer
   </div>
   <div class="header-right">
+    <!-- Active sessions counter -->
+    <div class="active-sessions-badge" id="active-sessions-badge">
+      <span class="pulse-dot"></span>
+      <span id="active-sessions-count">0</span> online
+    </div>
+
     <span id="status-badge">—</span>
+
     <button class="btn btn-secondary" onclick="refreshData()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
@@ -843,8 +983,44 @@
       </svg>
       Refresh
     </button>
+
+    <!-- Logged out: Sign In button -->
+    <a href="/login" class="btn btn-primary" id="header-signin-btn">Sign In</a>
+
+    <!-- Logged in: user pill -->
+    <div class="user-pill" id="header-user-pill" onclick="toggleUserDropdown()">
+      <div class="user-initials" id="user-initials">?</div>
+      <span class="user-display-name" id="user-display-name">User</span>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
   </div>
 </header>
+
+<!-- User dropdown -->
+<div id="user-dropdown">
+  <div class="dropdown-header">
+    <div class="dd-name"  id="dropdown-name">—</div>
+    <div class="dd-email" id="dropdown-email">—</div>
+  </div>
+  <button class="dropdown-item" onclick="openSessionsModal()">
+    Login History
+  </button>
+  <div class="dropdown-divider"></div>
+  <button class="dropdown-item danger" onclick="signOut()">Sign Out</button>
+</div>
+
+<!-- Login History Modal -->
+<div id="sessions-overlay" onclick="if(event.target===this)closeSessionsModal()">
+  <div id="sessions-modal">
+    <div class="sm-header">
+      <span class="sm-title">Login History</span>
+      <button class="sm-close" onclick="closeSessionsModal()">✕</button>
+    </div>
+    <div id="sessions-table-wrap" style="padding:16px">
+      <p style="color:var(--text2);font-size:13px">Loading…</p>
+    </div>
+  </div>
+</div>
 
 <!-- Tab Bar -->
 <div class="tab-bar">
@@ -2556,6 +2732,131 @@ document.addEventListener('click', e => {
     pop.classList.remove('visible');
   }
 });
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
+let _authUser = null;
+
+async function initAuth() {
+  try {
+    const res  = await fetch('/api/me', {credentials: 'same-origin'});
+    const data = await res.json();
+    if (data.logged_in) {
+      _authUser = data;
+      document.getElementById('header-signin-btn').style.display = 'none';
+      const pill = document.getElementById('header-user-pill');
+      pill.style.display = 'flex';
+      const name = data.display_name || data.email.split('@')[0];
+      document.getElementById('user-display-name').textContent = name;
+      document.getElementById('user-initials').textContent = name.substring(0,2).toUpperCase();
+      document.getElementById('dropdown-name').textContent  = name;
+      document.getElementById('dropdown-email').textContent = data.email;
+      if (data.avatar_url) {
+        const img = document.createElement('img');
+        img.src = data.avatar_url;
+        img.className = 'user-avatar-img';
+        img.alt = name;
+        document.getElementById('user-initials').replaceWith(img);
+      }
+    }
+  } catch(e) { /* unauthenticated — show Sign In button */ }
+}
+
+async function loadActiveSessions() {
+  try {
+    const res  = await fetch('/api/active-sessions', {credentials: 'same-origin'});
+    const data = await res.json();
+    const badge = document.getElementById('active-sessions-badge');
+    if (data.active > 0) {
+      document.getElementById('active-sessions-count').textContent = data.active;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch(e) {}
+}
+
+function toggleUserDropdown() {
+  const dd = document.getElementById('user-dropdown');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  const pill = document.getElementById('header-user-pill');
+  const dd   = document.getElementById('user-dropdown');
+  if (dd && dd.style.display !== 'none' &&
+      !pill.contains(e.target) && !dd.contains(e.target)) {
+    dd.style.display = 'none';
+  }
+});
+
+async function signOut() {
+  document.getElementById('user-dropdown').style.display = 'none';
+  await fetch('/auth/logout', {method: 'POST', credentials: 'same-origin'});
+  window.location.reload();
+}
+
+async function openSessionsModal() {
+  document.getElementById('user-dropdown').style.display = 'none';
+  document.getElementById('sessions-overlay').classList.add('visible');
+  document.getElementById('sessions-table-wrap').innerHTML =
+    '<p style="color:var(--text2);font-size:13px;padding:8px 0">Loading…</p>';
+  try {
+    const res  = await fetch('/api/user/sessions', {credentials: 'same-origin'});
+    const data = await res.json();
+    if (!data.sessions || data.sessions.length === 0) {
+      document.getElementById('sessions-table-wrap').innerHTML =
+        '<p style="color:var(--text2);font-size:13px">No sessions found.</p>';
+      return;
+    }
+    const rows = data.sessions.map(s => {
+      const when    = s.created_at ? new Date(s.created_at).toLocaleString() : '—';
+      const lastSeen= s.last_seen_at ? new Date(s.last_seen_at).toLocaleString() : '—';
+      const loc     = [s.city, s.country].filter(Boolean).join(', ') || '—';
+      const current = s.is_current ? '<span class="active-dot"></span> ' : '';
+      const ua      = (s.user_agent || '—').substring(0, 60) + (s.user_agent && s.user_agent.length > 60 ? '…' : '');
+      return `<tr class="${s.is_current ? 'current-session' : ''}">
+        <td>${current}${esc(s.ip_address || '—')}</td>
+        <td>${esc(loc)}</td>
+        <td><span class="provider-badge">${esc(s.auth_provider)}</span></td>
+        <td>${when}</td>
+        <td>${lastSeen}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${esc(s.user_agent||'')}">${esc(ua)}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('sessions-table-wrap').innerHTML = `
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">
+        <span class="active-dot"></span> = current session
+      </p>
+      <div style="overflow-x:auto">
+        <table class="session-table">
+          <thead><tr>
+            <th>IP Address</th><th>Location</th><th>Provider</th>
+            <th>Signed In</th><th>Last Seen</th><th>Browser / Device</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  } catch(e) {
+    document.getElementById('sessions-table-wrap').innerHTML =
+      '<p style="color:var(--red);font-size:13px">Failed to load sessions.</p>';
+  }
+}
+
+function closeSessionsModal() {
+  document.getElementById('sessions-overlay').classList.remove('visible');
+}
+
+// Run on page load
+initAuth();
+loadActiveSessions();
+
+// Heartbeat: keep session alive + refresh active count every 90s
+setInterval(() => {
+  fetch('/api/me', {credentials: 'same-origin'}).catch(()=>{});
+  loadActiveSessions();
+}, 90_000);
 </script>
 
 <!-- FAB: Quick-Add to Watchlist -->
