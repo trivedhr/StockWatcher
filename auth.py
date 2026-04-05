@@ -406,6 +406,89 @@ def facebook_callback():
     )
 
 
+# ── Route: Facebook JS SDK token exchange ────────────────────────────────────
+# Called by fbsdk.js after a successful client-side FB.login().
+# The browser sends its short-lived FB access token; we verify it with
+# the Graph API directly (no redirect flow needed) and create a server session.
+
+@auth_bp.route('/auth/facebook/token', methods=['POST'])
+def facebook_token():
+    app_id     = os.environ.get('FACEBOOK_CLIENT_ID')
+    app_secret = os.environ.get('FACEBOOK_CLIENT_SECRET')
+    if not app_id or not app_secret:
+        return jsonify({'ok': False, 'error': 'Facebook not configured'}), 503
+
+    data         = request.get_json(silent=True) or {}
+    access_token = data.get('access_token', '').strip()
+    if not access_token:
+        return jsonify({'ok': False, 'error': 'access_token required'}), 400
+
+    try:
+        # 1. Verify token with Facebook's debug endpoint
+        app_token = f'{app_id}|{app_secret}'
+        debug_r   = req_lib.get(
+            'https://graph.facebook.com/debug_token',
+            params={'input_token': access_token, 'access_token': app_token},
+            timeout=8,
+        )
+        debug_data = debug_r.json().get('data', {})
+        if not debug_data.get('is_valid'):
+            return jsonify({'ok': False, 'error': 'Invalid Facebook token'}), 401
+        if str(debug_data.get('app_id')) != str(app_id):
+            return jsonify({'ok': False, 'error': 'Token app mismatch'}), 401
+
+        # 2. Fetch user info
+        me_r = req_lib.get(
+            'https://graph.facebook.com/me',
+            params={'fields': 'id,name,email,picture.width(200)',
+                    'access_token': access_token},
+            timeout=8,
+        )
+        me = me_r.json()
+        if 'error' in me:
+            return jsonify({'ok': False, 'error': me['error'].get('message')}), 401
+
+        fb_id   = me.get('id')
+        email   = (me.get('email') or f'{fb_id}@facebook.invalid').lower()
+        name    = me.get('name') or email.split('@')[0]
+        picture = (me.get('picture', {}).get('data', {}).get('url'))
+    except Exception as e:
+        return jsonify({'ok': False, 'error': f'Token verification failed: {e}'}), 500
+
+    # 3. Upsert user + create server session (same as server-side flow)
+    db = DbSession()
+    try:
+        user = db.query(User).filter_by(facebook_id=fb_id).first()
+        if not user and email:
+            user = db.query(User).filter_by(email=email).first()
+            if user:
+                user.facebook_id = fb_id
+        if not user:
+            user = User(
+                id=str(uuid.uuid4()),
+                email=email,
+                display_name=name,
+                avatar_url=picture,
+                facebook_id=fb_id,
+            )
+            db.add(user)
+            db.commit()
+        else:
+            if picture and not user.avatar_url:
+                user.avatar_url = picture
+            if name and not user.display_name:
+                user.display_name = name
+            db.commit()
+
+        _create_db_session(user, 'facebook', db)
+        return jsonify({'ok': True, 'user': user.to_dict()})
+    except Exception as e:
+        db.rollback()
+        return jsonify({'ok': False, 'error': str(e)}), 500
+    finally:
+        db.close()
+
+
 # ── Routes: Apple Sign In ─────────────────────────────────────────────────────
 
 @auth_bp.route('/auth/apple/login')

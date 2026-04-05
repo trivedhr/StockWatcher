@@ -12,9 +12,17 @@ from datetime import datetime, timedelta
 
 @pytest.fixture
 def client():
-    """Flask test client with a clean in-memory state."""
+    """Flask test client with a clean database for each test."""
     from server import app
+    import db as db_module
+
     app.config['TESTING'] = True
+
+    # Drop and recreate all auth tables so each test starts with an empty DB.
+    # This is necessary because the SQLite file persists between test runs.
+    db_module.Base.metadata.drop_all(db_module.engine)
+    db_module.Base.metadata.create_all(db_module.engine)
+
     with app.test_client() as c:
         yield c
 
